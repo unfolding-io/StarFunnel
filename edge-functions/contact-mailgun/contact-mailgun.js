@@ -8,8 +8,6 @@ let {
   TO_EMAIL_ADDRESS,
 } = Deno.env.toObject();
 
-//MAILGUN_DOMAIN = "sandbox67597035c95842abb61118b540f37dcb.mailgun.org";
-
 export default async (request, context) => {
   if (
     !MAILGUN_API_KEY ||
@@ -51,9 +49,9 @@ export default async (request, context) => {
         body: payload,
       },
     );
-   
+
     let response = await resp.json();
-    
+
     return Response.json({
       statusCode: 200,
       status: resp?.ok ? "ok" : "error",
