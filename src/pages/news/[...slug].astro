@@ -1,0 +1,91 @@
+---
+/* BLOG POST PAGES */
+import { getArchiveNav } from "@util/helpers";
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import Breadcrumb from "@components/navigation/Breadcrumb.astro";
+import ItemNav from "@components/navigation/ItemNav.astro";
+import PageLayout from "@layouts/PageLayout.astro";
+import { t } from "@util/translate";
+
+export async function getStaticPaths() {
+  const posts = (await getCollection("blog")).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+  );
+  const count = posts.length;
+  return posts.map((post, index) => {
+    let next: CollectionEntry<"blog"> | null = null;
+    let prev: CollectionEntry<"blog"> | null = null;
+    const archiveNav = getArchiveNav(count, index, posts);
+    next = archiveNav.next;
+    prev = archiveNav.prev;
+
+    return {
+      params: { slug: post.slug },
+      props: {
+        ...post,
+        data: {
+          ...post.data,
+          nav: {
+            next: {
+              slug: next?.slug,
+              data: {
+                title: next?.data?.title,
+                thumbnail: next?.data?.thumbnail,
+                pubDate: next?.data?.pubDate,
+                intro: next?.data?.intro,
+              },
+            },
+            prev: {
+              slug: prev?.slug,
+              data: {
+                title: prev?.data?.title,
+                thumbnail: prev?.data?.thumbnail,
+                pubDate: prev?.data?.pubDate,
+                intro: prev?.data?.intro,
+              },
+            },
+            index: index,
+          },
+        },
+      },
+    };
+  });
+}
+
+type Props = CollectionEntry<"blog">;
+const base_url = import.meta.env.BLOG_SLUG;
+const post = Astro.props;
+const { Content } = await post.render();
+
+let searchFilters = [`${t("content")}:${base_url}`];
+if (post?.data?.tag) {
+  const searchTags = post.data.tag.map((tag) => `${t("tag")}:${tag}`);
+  searchFilters = [...searchFilters, ...searchTags];
+}
+
+const filter = post.data?.tag
+  ? {
+      name: post.data.tag[0],
+      type: "tag",
+    }
+  : null;
+---
+
+<PageLayout
+  {...post.data}
+  {base_url}
+  style={{
+    ...post.data.style,
+    container: "sm",
+    nav_color: "original",
+  }}
+>
+  <Breadcrumb title={post.data.title} filter={filter} slot="hero" />
+  <div class="richtext pb-10">
+    <Content />
+  </div>
+  <div class="pb-20" slot="nav">
+    <ItemNav nav={post.data.nav} {base_url} />
+  </div>
+</PageLayout>

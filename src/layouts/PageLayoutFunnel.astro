@@ -1,0 +1,60 @@
+---
+import Block from "@components/block/Block.astro";
+import BaseLayout from "./BaseLayout.astro";
+import HeroFunnel from "@components/hero/HeroFunnel.astro";
+
+const props = Astro.props;
+const { title, description, blocks, style, thumbnail, og_image } = Astro.props;
+
+const hasBlocks = blocks && blocks.length > 0;
+---
+
+<BaseLayout {title} {description} {...style} {thumbnail} {og_image}>
+  <HeroFunnel {...props}>
+    <slot name="hero" />
+  </HeroFunnel>
+
+  <div class="relative w-full" id="more">
+    <div
+      class=`page__content container-${style.container || 'md'} ${style.content_class || "py-14"} `
+    >
+      <slot />
+      {!hasBlocks && <slot name="nav" />}
+    </div>
+
+    {
+      hasBlocks && (
+        <>
+          <div class={style.block_class}>
+            {blocks.map((section) => (
+              <Block {...section} />
+            ))}
+          </div>
+
+          <slot name="nav" />
+        </>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style is:global>
+  .page__content {
+    &:empty {
+      display: none;
+    }
+    &:has(> .richtext:empty) {
+      display: none;
+    }
+    .img,
+    iframe {
+      width: calc(100% + var(--container-spacing));
+      margin-left: calc(var(--spacing) * -1);
+      @apply my-10 aspect-video h-auto;
+      @screen md {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+  }
+</style>

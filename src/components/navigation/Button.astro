@@ -1,0 +1,48 @@
+---
+import { Icon } from "astro-icon";
+import { getIconName } from "@util/helpers";
+
+const { href, label, icon, icon_only, color, className } = Astro.props;
+const target = href.includes("http") ? "_blank" : "_self";
+---
+
+<a
+  href={href}
+  class={`btn group  ${color || `surface-primary`} ${className || ""} ${
+    !icon_only || "btn-icon"
+  }`}
+  target={target}
+>
+  {!icon_only && <span>{label}</span>}
+  {icon && <Icon name={getIconName(icon)} class="h-5 w-5" />}
+  {
+    !icon && (
+      <svg
+        class="-mr-1 h-5 w-5"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xml:space="preserve"
+        style="enable-background: new 0 0 12 12"
+        viewBox="0 0 12 12"
+      >
+        <g class="-translate-x-[20%] transition-transform duration-300 group-hover:translate-x-0">
+          <path
+            d="M9.2 6.4 6.4 9.1c-.1.1-.1.4 0 .5s.4.1.5 0l3.4-3.4c.1-.1.1-.4 0-.5L7 2.4c-.1-.1-.4-.1-.5 0-.1.1-.1.4 0 .5l2.7 2.7c.4.4.4.4 0 .8z"
+            fill="currentColor"
+            stroke="currentColor"
+            stroke-width="0.5"
+          />
+          <g>
+            <path
+              class="origin-right -translate-x-[8%] scale-x-0 transition-transform duration-300 group-hover:scale-x-75"
+              d="M9.6 5.6H1.9c-.2 0-.3.2-.3.4s.2.4.4.4h7.7c.2 0 .4-.2.4-.4s-.3-.4-.5-.4z"
+              fill="currentColor"
+              stroke="currentColor"
+              stroke-width="0.5"
+            />
+          </g>
+        </g>
+      </svg>
+    )
+  }
+</a>

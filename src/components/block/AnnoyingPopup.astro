@@ -1,0 +1,163 @@
+---
+import { getEntry } from "astro:content";
+import { Picture } from "astro-imagetools/components";
+import { Icon } from "astro-icon";
+import { marked } from "marked";
+
+import Popup from "@components/dialog/Popup.vue";
+import Button from "@components/navigation/Button.astro";
+
+const { content, link, code, media, buttons, style, timing, newsletter } =
+  Astro.props;
+const { slot, ...props } = Astro.props;
+let newsletterItem;
+const renderedContent = marked.parse(content);
+
+if (newsletter) {
+  const contact = await getEntry("config", "contact");
+
+  newsletterItem = contact.data.newsletter.list
+    .filter((list) => list.link === newsletter)
+    .pop();
+}
+---
+
+{
+  timing.on_load && (
+    <>
+      <Popup
+        client:idle
+        data={timing}
+        {link}
+        {code}
+        newsletter={newsletterItem}
+        className={`${style?.surface || "surface-dark"} `}
+      >
+        <Icon name="close" class="w-6" slot="close" />
+        <div class={`relative z-10 p-8`} slot="content">
+          <div
+            set:html={renderedContent}
+            class="richtext fade-up"
+            style="--animation-delay: 0.4s"
+          />
+        </div>
+
+        {buttons && (
+          <div
+            slot="buttons"
+            style="--animation-delay: 0.6s"
+            class={`fade-up relative z-10 inline-flex flex-wrap gap-4 py-8`}
+          >
+            {buttons.map((btn) => (
+              <Button {...btn} />
+            ))}
+          </div>
+        )}
+
+        <div
+          class="absolute inset-0 z-0"
+          style={`opacity: ${media.image_opacity}`}
+          slot="image"
+        >
+          {media.thumbnail && (
+            <Picture
+              src={media.thumbnail}
+              width={1920}
+              height={900}
+              ar={2.25}
+              alt={"background image"}
+              layout="fill"
+              breakpoints={[1000, 1280, 1440, 1536, 1920]}
+              position="attention"
+              sizes={"100vw"}
+              artDirectives={[
+                {
+                  media: "(max-width: 500px)",
+                  ar: 0.7,
+                  src: media.thumbnail,
+                  breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
+                },
+                {
+                  media: "(max-width: 1000px)",
+                  ar: 1,
+                  src: media.thumbnail,
+                  breakpoints: [
+                    500, 601, 768, 820, 962, 1280, 1440, 1536, 1920,
+                  ],
+                },
+              ]}
+            />
+          )}
+        </div>
+      </Popup>
+    </>
+  )
+}
+
+{
+  !timing.on_load && (
+    <Popup
+      client:visible
+      data={timing}
+      {link}
+      {code}
+      newsletter={newsletterItem}
+      className={`${style.surface || "surface-dark"} `}
+    >
+      <Icon name="close" class="w-6" slot="close" />
+      <div class={`relative z-10 p-8`} slot="content">
+        <div
+          set:html={renderedContent}
+          class="richtext fade-up"
+          style="--animation-delay: 0.4s"
+        />
+      </div>
+
+      {buttons && (
+        <div
+          slot="buttons"
+          style="--animation-delay: 0.6s"
+          class={`fade-up relative z-10 inline-flex flex-wrap gap-4  py-8`}
+        >
+          {buttons.map((btn) => (
+            <Button {...btn} />
+          ))}
+        </div>
+      )}
+
+      <div
+        class="absolute inset-0 z-0"
+        style={`opacity: ${media.image_opacity}`}
+        slot="image"
+      >
+        {media.thumbnail && (
+          <Picture
+            src={media.thumbnail}
+            width={1920}
+            height={900}
+            ar={2.25}
+            alt={"background image"}
+            layout="fill"
+            breakpoints={[1000, 1280, 1440, 1536, 1920]}
+            position="attention"
+            sizes={"100vw"}
+            artDirectives={[
+              {
+                media: "(max-width: 500px)",
+                ar: 0.7,
+                src: media.thumbnail,
+                breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
+              },
+              {
+                media: "(max-width: 1000px)",
+                ar: 1,
+                src: media.thumbnail,
+                breakpoints: [500, 601, 768, 820, 962, 1280, 1440, 1536, 1920],
+              },
+            ]}
+          />
+        )}
+      </div>
+    </Popup>
+  )
+}

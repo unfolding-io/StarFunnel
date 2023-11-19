@@ -1,0 +1,40 @@
+---
+import Intersecting from "@components/common/Intersecting.vue";
+import ImageGallery from "./ImageGallery.astro";
+import TextMedia from "./TextMedia.astro";
+import RecentItems from "./RecentItems.astro";
+import RichText from "./RichText.astro";
+import Features from "./Features.astro";
+import AnnoyingPopup from "./AnnoyingPopup.astro";
+import PricingTable from "./PricingTable.astro";
+import Faqs from "./Faqs.astro";
+
+const { slot, ...props } = Astro.props;
+---
+
+{
+  props.component !== "AnnoyingPopup" && (
+    <Intersecting
+      client:visible
+      className={` ${props?.style?.surface || ""} ${
+        props?.style?.block_class ? props.style.block_class : "py-8 sm:py-20"
+      }`}
+    >
+      {props.component === "ImageGallery" && <ImageGallery {...props} />}
+      {props.component === "TextMedia" && <TextMedia {...props} />}
+      {props.component === "RecentItems" && <RecentItems {...props} />}
+      {props.component === "RichText" && <RichText {...props} />}
+      {props.component === "Features" && <Features {...props} />}
+      {props.component === "PricingTable" && <PricingTable {...props} />}
+      {props.component === "Faq" && <Faqs {...props} />}
+    </Intersecting>
+  )
+}
+
+{
+  props.component === "AnnoyingPopup" && (
+    <div class="popup_wrap">
+      <AnnoyingPopup {...props} />
+    </div>
+  )
+}

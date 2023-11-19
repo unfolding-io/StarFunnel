@@ -1,0 +1,25 @@
+---
+import { marked } from "marked";
+import Button from "@components/navigation/Button.astro";
+const { content, style, buttons } = Astro.props;
+---
+
+<div
+  class={`container-${style?.container || "md"}  `}
+  style="--animation-delay: 0.4s"
+>
+  {content && <div set:html={marked.parse(content)} class="richtext fade-up" />}
+
+  {
+    buttons && (
+      <div
+        class="fade-up inline-flex flex-wrap gap-4 py-8"
+        style="--animation-delay: 0.6s"
+      >
+        {buttons.map((btn) => (
+          <Button {...btn} />
+        ))}
+      </div>
+    )
+  }
+</div>

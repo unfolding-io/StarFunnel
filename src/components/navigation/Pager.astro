@@ -1,0 +1,130 @@
+---
+import { Icon } from "astro-icon";
+import { t } from "@util/translate";
+export interface Props {
+  currentPage: Number;
+  totalPage: Number;
+  url: string;
+}
+
+const { currentPage, totalPage, url } = Astro.props as Props;
+
+let pageStatuses = Array.from({ length: totalPage }, (v, i) => i + 1).map(
+  (i) => {
+    var item = {
+      pageNumber: i,
+      isActive: currentPage == i,
+      isDisabled: isDisabled(i),
+    };
+    return item;
+  },
+);
+
+function isDisabled(i) {
+  if (Number(totalPage) <= 6) return false;
+  if (i <= 2 || i >= Number(totalPage) - 1) return false;
+  if (currentPage == i - 1 || currentPage == i || currentPage == i + 1)
+    return false;
+  return true;
+}
+const prevUrl =
+  Number(currentPage) <= 2 ? `/${url}` : `/${url}/${Number(currentPage) - 1}`;
+---
+
+<div class="flex items-center justify-center">
+  <div class="flex items-center gap-1 text-lg">
+    {
+      Number(currentPage) > 1 && (
+        <a href={prevUrl} aria-label={t("previous")} class={` group h-6 w-6`}>
+          <svg
+            class=" h-5 w-5 rotate-180"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xml:space="preserve"
+            style="enable-background: new 0 0 12 12"
+            viewBox="0 0 12 12"
+          >
+            <g class="-translate-x-[20%] transition-transform duration-300 group-hover:translate-x-0">
+              <path
+                d="M9.2 6.4 6.4 9.1c-.1.1-.1.4 0 .5s.4.1.5 0l3.4-3.4c.1-.1.1-.4 0-.5L7 2.4c-.1-.1-.4-.1-.5 0-.1.1-.1.4 0 .5l2.7 2.7c.4.4.4.4 0 .8z"
+                fill="currentColor"
+                stroke="currentColor"
+                stroke-width="0.5"
+              />
+              <g>
+                <path
+                  class="origin-right -translate-x-[8%] scale-x-0 transition-transform duration-300 group-hover:scale-x-75"
+                  d="M9.6 5.6H1.9c-.2 0-.3.2-.3.4s.2.4.4.4h7.7c.2 0 .4-.2.4-.4s-.3-.4-.5-.4z"
+                  fill="currentColor"
+                  stroke="currentColor"
+                  stroke-width="0.5"
+                />
+              </g>
+            </g>
+          </svg>
+        </a>
+      )
+    }
+    {
+      pageStatuses.map((pageStatus, index) =>
+        pageStatus.isActive ? (
+          <span class={`surface-secondary rounded-md px-2 py-1`}>
+            {currentPage}
+          </span>
+        ) : pageStatus.isDisabled && !pageStatuses[index - 1].isDisabled ? (
+          <span class={`opacity-70`}>...</span>
+        ) : (
+          !pageStatus.isDisabled && (
+            <a
+              aria-label={`${t("go_to_page")} ${pageStatus.pageNumber}`}
+              class="px-2 py-1 "
+              href={`/${url}${
+                Number(pageStatus.pageNumber) > 1
+                  ? `/${pageStatus.pageNumber}`
+                  : ""
+              }`}
+            >
+              {pageStatus.pageNumber}
+            </a>
+          )
+        ),
+      )
+    }
+    {
+      currentPage < totalPage && (
+        <a
+          href={`/${url}/${Number(currentPage) + 1}`}
+          aria-label={t("next")}
+          class={`group h-6 w-6`}
+        >
+          <svg
+            class=" h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xml:space="preserve"
+            style="enable-background: new 0 0 12 12"
+            viewBox="0 0 12 12"
+          >
+            <g class="-translate-x-[20%] transition-transform duration-300 group-hover:translate-x-0">
+              <path
+                d="M9.2 6.4 6.4 9.1c-.1.1-.1.4 0 .5s.4.1.5 0l3.4-3.4c.1-.1.1-.4 0-.5L7 2.4c-.1-.1-.4-.1-.5 0-.1.1-.1.4 0 .5l2.7 2.7c.4.4.4.4 0 .8z"
+                fill="currentColor"
+                stroke="currentColor"
+                stroke-width="0.5"
+              />
+              <g>
+                <path
+                  class="origin-right -translate-x-[8%] scale-x-0 transition-transform duration-300 group-hover:scale-x-75"
+                  d="M9.6 5.6H1.9c-.2 0-.3.2-.3.4s.2.4.4.4h7.7c.2 0 .4-.2.4-.4s-.3-.4-.5-.4z"
+                  fill="currentColor"
+                  stroke="currentColor"
+                  stroke-width="0.5"
+                />
+              </g>
+            </g>
+          </svg>
+        </a>
+      )
+    }
+  </div>
+</div>

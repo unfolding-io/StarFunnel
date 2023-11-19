@@ -1,0 +1,21 @@
+---
+const { nav, base_url } = Astro.props;
+import ItemCard from "@components/cards/ItemCard.astro";
+import { t } from "@util/translate";
+---
+
+<div class="mb-8 grid w-full gap-5 border-t-2 pt-8">
+  <div class="text-overline text-left text-sm">{t("previous_and_next")}</div>
+  <div class="grid w-full grid-cols-2 justify-stretch gap-4">
+    {
+      nav.prev && nav.prev.data.title && (
+        <ItemCard content={nav.prev} {base_url} sizes="100vw" animate={true} />
+      )
+    }
+    {
+      nav.next && nav.next?.data.title && (
+        <ItemCard content={nav.next} {base_url} sizes="100vw" animate={true} />
+      )
+    }
+  </div>
+</div>

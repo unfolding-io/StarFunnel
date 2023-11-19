@@ -1,0 +1,32 @@
+---
+const { filters, className, links, active, base_url, type } = Astro.props;
+import { slugify } from "@util/helpers";
+---
+
+<div
+  class={`inline-flex md:flex gap-4 flex-wrap ${className ? className : ""}`}
+>
+  {
+    !!links &&
+      filters.map((filter) => (
+        <a
+          href={`/${base_url}${
+            filter === active ? "" : `/${type || "tag"}/${slugify(filter)}`
+          }`}
+          data-replace={filter}
+          class={`btn-replace pb-1 text-xs uppercase tracking-widest  
+						${filter == active ? "font-bold" : ""} `}
+        >
+          <span>{filter}</span>
+        </a>
+      ))
+  }
+  {
+    !links &&
+      filters.map((filter) => (
+        <span class=" surface-secondary block rounded-md px-2 py-0.5 text-xs uppercase tracking-widest opacity-90">
+          {filter}
+        </span>
+      ))
+  }
+</div>

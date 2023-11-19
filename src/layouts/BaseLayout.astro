@@ -1,0 +1,221 @@
+---
+import { getEntry } from "astro:content";
+import { t } from "@util/translate";
+import { Icon } from "astro-icon";
+import { marked } from "marked";
+import { Picture } from "astro-imagetools/components";
+import BaseHead from "@components/BaseHead.astro";
+import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
+import Contact from "@components/form/Contact.vue";
+import Dialog from "@components/dialog/Dialog.vue";
+import Newsletter from "@components/form/Newsletter.vue";
+import Auth from "@components/form/Auth.vue";
+import Init from "@components/common/Init.vue";
+import "@fontsource-variable/dm-sans";
+
+const lang = import.meta.env.WEBSITE_LANGUAGE;
+const currency = import.meta.env.CURRENCY;
+const { title, description, page_class, thumbnail, og_image, nav_color } =
+  Astro.props;
+const navigation = await getEntry("config", "navigation");
+const about = await getEntry("config", "about");
+const contact = await getEntry("config", "contact");
+
+const newsletters = () => {
+  const data = JSON.parse(JSON.stringify(contact.data.newsletter));
+  let items;
+  if (
+    contact?.data?.newsletter?.list &&
+    contact.data.newsletter.list.length > 0
+  ) {
+    items = contact.data.newsletter.list;
+    delete data.list;
+  }
+
+  return [...items, data];
+};
+---
+
+<!doctype html>
+<html lang={lang} data-currency={currency}>
+  <head>
+    <BaseHead
+      title={title}
+      description={description}
+      thumbnail={!!og_image ? og_image : thumbnail}
+    />
+  </head>
+  <body class={`surface-base ${page_class || ""}`}>
+    <Header
+      title={title}
+      color={nav_color}
+      menu={navigation.data.main_menu}
+      cta={navigation.data.cta_menu}
+      social={contact.data.social}
+      about={about.data}
+    />
+    <main>
+      <slot />
+    </main>
+    <div
+      class="pointer-events-none sticky bottom-0 right-0 z-40 -mb-8 h-8 w-full"
+    >
+      <div class="container-xl absolute bottom-0 flex justify-end">
+        <a
+          href="#top"
+          aria-label={t("back_to_top")}
+          class="btn surface-primary btn-to-top group pointer-events-auto grid h-10 w-10 -translate-y-4 place-items-center opacity-0"
+        >
+          <svg
+            class="h-5 w-5 -rotate-90"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xml:space="preserve"
+            style="enable-background: new 0 0 12 12"
+            viewBox="0 0 12 12"
+          >
+            <g
+              class="-translate-x-[20%] transition-transform duration-300 group-hover:translate-x-0"
+            >
+              <path
+                d="M9.2 6.4 6.4 9.1c-.1.1-.1.4 0 .5s.4.1.5 0l3.4-3.4c.1-.1.1-.4 0-.5L7 2.4c-.1-.1-.4-.1-.5 0-.1.1-.1.4 0 .5l2.7 2.7c.4.4.4.4 0 .8z"
+                fill="currentColor"
+                stroke="currentColor"
+                stroke-width="0.5"></path>
+              <g>
+                <path
+                  class="origin-right -translate-x-[8%] scale-x-0 transition-transform duration-300 group-hover:scale-x-75"
+                  d="M9.6 5.6H1.9c-.2 0-.3.2-.3.4s.2.4.4.4h7.7c.2 0 .4-.2.4-.4s-.3-.4-.5-.4z"
+                  fill="currentColor"
+                  stroke="currentColor"
+                  stroke-width="0.5"></path>
+              </g>
+            </g>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <Footer>
+      <slot name="footer" />
+    </Footer>
+
+    <Init client:idle />
+    <svg class="hide hidden">
+      <filter id="noiseFilter">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="2.29"
+          numOctaves="1"
+          stitchTiles="stitch"></feTurbulence>
+      </filter>
+    </svg>
+
+    <script>
+      const html = document.getElementsByTagName("html")[0];
+
+      const SmoothScroll = () => {
+        html.style["scroll-behavior"] = "auto";
+      };
+      SmoothScroll();
+      document.addEventListener("astro:beforeload", SmoothScroll);
+    </script>
+    <Dialog link="contact" type="contact" client:idle>
+      <Contact client:visible contact={contact.data.form} slot="content">
+        {
+          contact?.data?.form?.intro && (
+            <div
+              set:html={marked.parse(contact.data.form.intro)}
+              slot="texts"
+            />
+          )
+        }
+      </Contact>
+      <Picture
+        slot="image"
+        src={contact.data.form.thumbnail}
+        alt={`contact`}
+        sizes="50vw"
+        aspect={1}
+        format={["webp"]}
+        fit="cover"
+        layout="fill"
+        placeholder="blurred"
+        position="attention"
+        loading="lazy"
+        breakpoints={[420, 725, 960]}
+        artDirectives={[
+          {
+            media: "(max-width: 768px)",
+            ar: 21 / 9,
+            src: contact.data.form.thumbnail,
+            layout: "constrained",
+            breakpoints: [500, 601, 768, 820, 962, 1280, 1440, 1536, 1920],
+          },
+        ]}
+      />
+    </Dialog>
+
+    {
+      newsletters().map((item) => (
+        <Dialog link={item.link} type="newsletter" client:idle>
+          <Newsletter client:visible slot="content" data={item} />
+
+          <Picture
+            slot="image"
+            src={item.thumbnail}
+            alt={item.title}
+            sizes="50vw"
+            aspect={4 / 5}
+            format={["webp"]}
+            fit="cover"
+            layout="fill"
+            placeholder="blurred"
+            position="attention"
+            loading="lazy"
+            breakpoints={[420, 725, 960]}
+            artDirectives={[
+              {
+                media: "(max-width: 768px)",
+                ar: 21 / 9,
+                layout: "constrained",
+                src: item.thumbnail,
+                breakpoints: [500, 601, 768, 820, 962],
+              },
+            ]}
+          />
+        </Dialog>
+      ))
+    }
+
+    <Dialog link="auth" type="auth" client:idle>
+      <div slot="content">
+        <Auth client:visible />
+      </div>
+      <Picture
+        slot="image"
+        src={contact.data.auth.thumbnail}
+        alt={`Auth`}
+        sizes="50vw"
+        aspect={4 / 5}
+        format={["webp"]}
+        fit="cover"
+        layout="fill"
+        placeholder="blurred"
+        position="attention"
+        loading="lazy"
+        breakpoints={[420, 725, 960]}
+        artDirectives={[
+          {
+            media: "(max-width: 768px)",
+            ar: 21 / 9,
+            layout: "constrained",
+            src: contact.data.auth.thumbnail,
+            breakpoints: [500, 601, 768, 820, 962],
+          },
+        ]}
+      />
+    </Dialog>
+  </body>
+</html>

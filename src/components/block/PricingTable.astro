@@ -1,0 +1,106 @@
+---
+import { slugify } from "@util/helpers";
+import { Icon } from "astro-icon";
+import Button from "@components/navigation/Button.astro";
+
+const { title, prices, style } = Astro.props;
+const id = title ? slugify(title) : "pricing";
+---
+
+<div
+  {id}
+  class={`container-${style.container} fade-up rounded-md features grid gap-8 scroll-m-8`}
+>
+  {title && <h1 class="title-sm fade-up"> {title}</h1>}
+  {
+    prices && prices.length > 0 && (
+      <div class="flex flex-wrap gap-8">
+        {prices.map((price) => (
+          <div class="surface-price flex min-w-[290px] flex-1 grow  overflow-hidden rounded shadow-2xl @container">
+            <div class="price-grid grid w-full  @xl:flex">
+              <div
+                class={`relative h-fit @xl:h-full @xl:max-w-xs  ${price.surface}`}
+              >
+                <div class=" flex-shrink-0  px-8 pb-14 pt-8 ">
+                  <div class="flex-wrap items-end gap-2">
+                    <span class="title font-medium tracking-tight">
+                      {price.price}
+                    </span>
+                    <span class="opacity-60">{price.price_suffix} </span>
+                  </div>
+
+                  <div class="">
+                    <h2 class="text-2xl font-normal">{price.title}</h2>
+                    <p class="balance text-sm opacity-60">{price.intro}</p>
+                  </div>
+                </div>
+
+                <div class="r-0 absolute -bottom-px flex w-full shrink-0  @md:scale-110">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    xml:space="preserve"
+                    preserveAspectRatio="none"
+                    class="w-full"
+                    style="enable-background:new 0 0 1200 125.17"
+                    viewBox="0 0 1200 125.17"
+                  >
+                    <path
+                      d="M878.61 53.73c-58 10.79-114.16 30.13-172 41.86-82.39 16.72-168.19 17.73-250.45.39-79.94-16.81-162.83-57.81-241.82-78.64C144.29-1.14 67.81-8.75 0 14.34v110.83h1200V82.82a600.1 600.1 0 0 0-321.39-29.09z"
+                      class="shape-fill"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <ul class="@xl:column-3 flex-1 p-8 @lg:columns-2 @lg:gap-8 @lg:pb-20">
+                {price.features.map((feature) => (
+                  <li class="flex items-start gap-2 py-1">
+                    {feature.icon && (
+                      <Icon
+                        name={feature.icon}
+                        class={`w-5 ${feature.icon_class}`}
+                      />
+                    )}
+
+                    {feature.label}
+                    <span class="ml-auto text-sm font-light">
+                      {feature.value}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <div class="bottom-0 right-0 flex w-full justify-end p-8 @md:absolute @md:pr-8">
+                <div class="mt-auto">
+                  {price?.buttons &&
+                    price.buttons.map((btn) => <Button {...btn} />)}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .price-grid {
+    grid-template-rows: min-content auto min-content;
+  }
+
+  .surface-price {
+    @apply bg-white text-dark dark:bg-black dark:text-light;
+    .shape-fill {
+      @apply fill-white dark:fill-black;
+    }
+  }
+  .features {
+    &__item {
+      min-width: min(100vw - var(--spacing), 16rem);
+      @screen sm {
+        max-width: 22rem;
+      }
+    }
+  }
+</style>

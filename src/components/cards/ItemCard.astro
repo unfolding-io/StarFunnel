@@ -1,0 +1,92 @@
+---
+import FormattedDate from "../FormattedDate.astro";
+import ItemFilter from "@components/navigation/ItemFilter.astro";
+import { Picture } from "astro-imagetools/components";
+
+const { content, base_url, sizes, animate } = Astro.props;
+
+const animation = `hero_${animate ? content.slug : Math.random()}`;
+---
+
+<a
+  href={`/${base_url}/${content.slug}/`}
+  class="blog-card fade-up group relative z-10 block overflow-hidden"
+  transition:name={`${animation}`}
+>
+  <div
+    class="blog-card__media surface-dark relative z-10 overflow-hidden rounded-md"
+  >
+    <div
+      class="group-over:ease-out transition-all duration-1000 ease-in group-hover:scale-125 group-hover:opacity-50 group-hover:duration-[3s]"
+    >
+      {
+        content.data.thumbnail && (
+          <Picture
+            attributes={{
+              picture: {
+                class: "fade-in",
+              },
+            }}
+            sizes={sizes ? sizes : "100vw"}
+            position="attention"
+            src={content.data.thumbnail}
+            ar={16 / 9}
+            alt={content.data.title}
+            layout="fullWidth"
+          />
+        )
+      }
+    </div>
+    <div class="absolute inset-x-0 top-0 z-10 flex justify-end gap-2 p-4">
+      {
+        content.data.tag && !content.data.price && (
+          <ItemFilter filters={content.data.tag} className="" {base_url} />
+        )
+      }
+    </div>
+
+    <div class="absolute inset-x-0 bottom-0 z-10 p-4">
+      {
+        content.data.pubDate && (
+          <span class="text-overline text-xs">
+            <FormattedDate date={content.data.pubDate} />
+          </span>
+        )
+      }
+    </div>
+  </div>
+
+  <div class="blog-card__content relative inset-0 z-10 grid place-items-center">
+    <div class="relative w-full py-4">
+      <h2 class="balance title-xs">
+        {content.data.title}
+      </h2>
+      {
+        content.data.intro && (
+          <div class=" ">
+            <p class="mt-2 line-clamp-4">{content.data.intro}</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</a>
+
+<style>
+  .blog-card {
+    container-type: inline-size;
+
+    &__media:before {
+      content: "";
+      @apply absolute inset-x-0 bottom-0 z-10 h-28 bg-gradient-to-t from-black to-transparent opacity-50;
+    }
+    h2 {
+      line-height: 1.2;
+      font-size: 2.5rem;
+      font-size: clamp(1.5rem, 8cqi, 8rem);
+    }
+
+    &__content {
+    }
+  }
+</style>

@@ -1,0 +1,65 @@
+---
+/* BLOG ARCHIVE PAGES */
+
+import { getCollection, getEntry } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Intersecting from "@components/common/Intersecting.vue";
+import ItemCard from "@components/cards/ItemCard.astro";
+import Pager from "@components/navigation/Pager.astro";
+
+
+export async function getStaticPaths({ paginate }) {
+  const posts = (await getCollection("blog")).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+  );
+  const { data } = await getEntry("config", "blog");
+
+  return paginate(posts, { pageSize: data.per_page });
+}
+const base_url = import.meta.env.BLOG_SLUG;
+const { page, tag } = Astro.props;
+
+const { data } = await getEntry("config", "blog");
+
+const posts = (await getCollection("blog")).sort(
+  (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf(),
+);
+
+/* get the used tags */
+const allFilters = posts.map((post) => post.data.tag).filter((post) => !!post);
+const filters = [...new Set(allFilters.flat(1))];
+---
+
+<PageLayout {...page} {...data} {filters} {base_url} {tag}>
+  <section>
+    <ul
+      class={`grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 md:gap-20 pb-20`}
+    >
+      {
+        page.data.map((post) => (
+          <li>
+            <Intersecting client:visible>
+              <ItemCard
+                content={post}
+                {base_url}
+                sizes="100vw"
+                animate={true}
+              />
+            </Intersecting>
+          </li>
+        ))
+      }
+    </ul>
+    {
+      page.lastPage > 1 && (
+        <div class="container-md pb-4">
+          <Pager
+            totalPage={page.lastPage}
+            currentPage={page.currentPage}
+            url={base_url}
+          />
+        </div>
+      )
+    }
+  </section>
+</PageLayout>

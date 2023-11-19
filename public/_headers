@@ -1,0 +1,18 @@
+/*
+  cache-control: public,max-age=300
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  X-XSS-Protection: 1; mode=block
+
+/_astro/*
+  cache-control: public,max-age=31536000,immutable
+/fonts/*
+  cache-control: public,max-age=31536000,immutable
+/files/*
+  cache-control: public,max-age=31536000,immutable
+/video/*
+  cache-control: public,max-age=31536000,immutable
+/scroll-timeline.js
+  cache-control: public,max-age=31536000,immutable
+/favicon.svg
+  cache-control: public,max-age=2628000

@@ -1,0 +1,376 @@
+---
+import { Picture } from "astro-imagetools/components";
+import { Icon } from "astro-icon";
+import { marked } from "marked";
+import Button from "@components/navigation/Button.astro";
+import VideoInline from "@components/media/VideoInline.vue";
+import VideoDialog from "@components/dialog/VideoDialog.vue";
+import VideoDialogBtn from "@components/media/VideoDialogBtn.vue";
+
+const { media, style, content, buttons } = Astro.props;
+
+const renderedContent = marked.parse(content);
+const containerSizes = {
+  sm: "40rem", //640px
+  md: "55rem", // 880px
+  lg: "65rem", //1040
+  xl: "75rem", // 1200
+  full: "100vw",
+  none: "100vw",
+};
+const roundedClass =
+  style.template == "column" && style.container !== "none" ? "rounded" : "";
+
+/* IMAGES SIZES */
+let sizes = "100vw";
+if (style.template === "column") {
+  const percent = (100 / parseInt(media.image_size)).toFixed(2);
+  sizes = `(max-width: 767px) calc(100vw - 4rem), (min-width: ${
+    containerSizes[style.container]
+  } ) calc(${
+    containerSizes[style.container]
+  } / ${percent}), calc(100vw / 4rem), calc(${
+    containerSizes[style.container]
+  } / ${percent})`;
+} else {
+  sizes = `min(100vw, ${containerSizes[style.container]})`;
+}
+
+const imageName = media.thumbnail.split("/").pop().split(".")[0];
+
+const columnClass = () => {
+  if (style.template !== "column") return "";
+  return `column-grid column-grid-${media.image_size || 50}`;
+};
+
+const mediaClass = () => {
+  if (!media?.aspect) return " ";
+  if (media.aspect == 1.777) return "aspect-video";
+  if (media.aspect == 1.25) return "aspect-5/4";
+  if (media.aspect == 0.8) return "aspect-4/5";
+  if (media.aspect == 0.5625) return "aspect-9/16";
+  if (media.aspect == 1) return "aspect-1";
+  return "";
+};
+
+const hasPreviewVideo = media?.video_preview?.trim() || false;
+const hasEmbed = !!media?.video_id?.trim() || false;
+---
+
+<div
+  class={`container-${
+    style.container
+  } ${columnClass()} text-image gap-8 text-image__${style.template} ${
+    style.reverse ? "reverse" : "normal"
+  } ${style.template === "banner" ? "parallax-wrap bg-dark" : ""}`}
+>
+  <div class="media">
+    {
+      imageName && (
+        <>
+          {style.template !== "banner" && (
+            <VideoDialogBtn
+              client:visible
+              video_id={media?.video_id}
+              className={`${
+                !hasEmbed || "group"
+              } w-full overflow-hidden ${roundedClass} ${mediaClass()}`}
+            >
+              <div
+                class={`transition-transform duration-1000 ease-in hover:scale-105 hover:duration-[1s]`}
+              >
+                {hasPreviewVideo && (
+                  <VideoInline url={media.video_preview} client:visible>
+                    <Picture
+                      src={media.thumbnail}
+                      breakpoints={[
+                        360, 390, 412, 601, 768, 820, 962, 1280, 1440, 1536,
+                        1920,
+                      ]}
+                      alt={media.title}
+                      layout="fullWidth"
+                      aspect={media.aspect}
+                      position="attention"
+                      sizes={sizes}
+                    />
+                    {hasEmbed && (
+                      <div class="absolute inset-0  z-50  grid place-items-center">
+                        <Icon
+                          name="play"
+                          class="h-20 w-20 text-secondary transition-transform duration-300 group-hover:scale-125"
+                        />
+                      </div>
+                    )}
+                  </VideoInline>
+                )}
+                {!hasPreviewVideo && (
+                  <Picture
+                    src={media.thumbnail}
+                    breakpoints={[
+                      360, 390, 412, 601, 768, 820, 962, 1280, 1440, 1536, 1920,
+                    ]}
+                    alt={media.title}
+                    layout="fullWidth"
+                    aspect={media.aspect}
+                    position="attention"
+                    sizes={sizes}
+                  />
+                )}
+              </div>
+            </VideoDialogBtn>
+          )}
+
+          {style.template === "banner" && hasPreviewVideo && (
+            <div
+              class={`parallax h-full w-full opacity-${media.opacity || "60"}`}
+            >
+              <VideoInline url={media.video_preview} client:visible>
+                <Picture
+                  src={media.thumbnail}
+                  width={1920}
+                  height={900}
+                  ar={2.25}
+                  alt={media.title}
+                  layout="fill"
+                  breakpoints={[1000, 1280, 1440, 1536, 1920]}
+                  position="attention"
+                  sizes={sizes}
+                  artDirectives={[
+                    {
+                      media: "(max-width: 500px)",
+                      ar: 0.7,
+                      src: media.thumbnail,
+                      breakpoints: [
+                        320, 360, 390, 412, 500, 601, 768, 1024, 1200,
+                      ],
+                    },
+                    {
+                      media: "(max-width: 1000px)",
+                      ar: 1,
+                      src: media.thumbnail,
+                      breakpoints: [
+                        500, 601, 768, 820, 962, 1280, 1440, 1536, 1920,
+                      ],
+                    },
+                  ]}
+                />
+              </VideoInline>
+            </div>
+          )}
+
+          {style.template === "banner" && !hasPreviewVideo && (
+            <Picture
+              attributes={{
+                picture: { class: `parallax opacity-${media.opacity || "60"}` },
+              }}
+              src={media.thumbnail}
+              width={1920}
+              height={900}
+              ar={2.25}
+              alt={media.title}
+              layout="fill"
+              breakpoints={[1000, 1280, 1440, 1536, 1920]}
+              position="attention"
+              sizes={sizes}
+              artDirectives={[
+                {
+                  media: "(max-width: 500px)",
+                  ar: 0.7,
+                  src: media.thumbnail,
+                  breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
+                },
+                {
+                  media: "(max-width: 1000px)",
+                  ar: 1,
+                  src: media.thumbnail,
+                  breakpoints: [
+                    500, 601, 768, 820, 962, 1280, 1440, 1536, 1920,
+                  ],
+                },
+              ]}
+            />
+          )}
+        </>
+      )
+    }
+  </div>
+
+  <div class="text-image__content z-20 my-auto flex h-full flex-1">
+    <div class="my-auto">
+      <div
+        set:html={renderedContent}
+        class="richtext fade-up"
+        style="--animation-delay: 0.4s"
+      />
+
+      {
+        buttons && (
+          <div
+            style="--animation-delay: 0.6s"
+            class={`fade-up inline-flex flex-wrap gap-4  ${
+              style.template === "banner"
+                ? "mb-8 w-full justify-center py-0"
+                : "py-8"
+            }`}
+          >
+            {buttons.map((btn) => (
+              <Button {...btn} />
+            ))}
+          </div>
+        )
+      }
+
+      {
+        hasEmbed && style.template === "banner" && (
+          <VideoDialogBtn
+            client:visible
+            video_id={media?.video_id}
+            className={`group grid w-full place-items-center `}
+          >
+            <Icon
+              name="play"
+              class="h-20 w-20 text-secondary transition-transform duration-300 group-hover:scale-125"
+            />
+          </VideoDialogBtn>
+        )
+      }
+    </div>
+  </div>
+</div>
+
+{
+  hasEmbed && (
+    <VideoDialog client:idle video_id={media?.video_id} embed={media?.embed}>
+      <Icon name="close" class="w-6" />
+    </VideoDialog>
+  )
+}
+
+<style lang="postcss">
+	.text-image {
+        @apply gap-8;
+
+		&__row {
+			@apply flex relative flex-col flex-nowrap ;
+			&.reverse {
+				@apply flex-col-reverse;
+			}
+
+			.media {
+				width: calc(100% + var(--container-spacing));
+				margin-inline: calc(var(--spacing) * -1);
+				 
+				.img {
+					@apply sticky top-8;
+				}
+			}
+		}
+		&__banner {
+			@apply relative overflow-hidden;  
+			&:not(.container-none){
+				@apply rounded-md;
+
+			} 
+			 
+			.media {
+				@apply absolute inset-0 pointer-events-none;
+			}
+            .text-image__content {
+                @apply relative z-10 w-full h-full  grid place-items-center py-20 bg-dark bg-opacity-30;
+                .richtext {
+                    @apply p-8 text-white max-w-2xl text-center;
+                }
+                
+            }
+		}
+
+	}
+
+	.column-grid {
+    @apply lg:gap-14;
+
+		.img {
+					@apply sticky top-8;
+				}
+		&-25 {
+			@apply grid   ;
+			@screen md { 
+			    grid-template-columns: minmax(0,3fr) minmax(0,1fr);
+				&.reverse {
+					grid-template-columns: minmax(0,1fr) minmax(0,3fr);
+				}
+			}
+			
+		}
+		&-33 {
+			@apply grid;
+			@screen md {
+				grid-template-columns: minmax(0,2fr) minmax(0,1fr);
+				   &.reverse {
+					   grid-template-columns: minmax(0,1fr) minmax(0,2fr);
+				   }
+			}
+		}
+
+		&-50 {
+			@apply grid md:grid-cols-2;
+			
+		}
+		&-66 {
+			@apply grid ;
+			@screen md {
+				 grid-template-columns: minmax(0,1fr) minmax(0,2fr);
+				&.reverse {
+					grid-template-columns: minmax(0,2fr) minmax(0,1fr);
+				}
+
+			}
+			
+			
+		}
+		&-75 {
+			@apply grid ;
+			@screen md {
+
+				grid-template-columns: minmax(0,1fr) minmax(0,3fr);
+				   &.reverse {
+					   grid-template-columns: minmax(0,3fr) minmax(0,1fr);
+				   }
+			}
+			
+		}
+
+
+
+		&.normal {
+
+			@screen md {
+
+				.media {
+					@apply col-start-2 row-start-1;
+					
+				}
+				.text-image__content {
+					@apply col-start-1 row-start-1 ;
+				}
+			}
+		}	
+		
+		&.container-none {
+			.text-image__content {
+				padding-inline: var(--spacing);
+					@screen md {
+						padding-inline: var(--container-spacing);
+					}
+				}
+
+				.img {
+					@apply sticky top-0;
+				}
+			
+		}
+			
+	}
+
+	
+</style>

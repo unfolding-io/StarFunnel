@@ -1,0 +1,103 @@
+---
+import { getCollection } from "astro:content";
+import { marked } from "marked";
+import ItemCard from "@components/cards/ItemCard.astro";
+
+import { t } from "@util/translate";
+import { getGridImageSizes, slugify } from "@util/helpers";
+
+const { title, content, count, post_tag, style } = Astro.props;
+
+let base_url;
+let posts;
+
+base_url = import.meta.env.BLOG_SLUG;
+posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+if (post_tag && post_tag.length > 0)
+  posts = posts.filter(
+    (post) =>
+      post.data?.tag &&
+      post_tag.some((t) => post.data?.tag && post.data.tag.includes(t)),
+  );
+
+if (count && count > 0) posts = posts.slice(0, count);
+
+const sizes = getGridImageSizes("lg");
+---
+
+<div class={`recent-blogs grid gap-8 fade-up container-lg `}>
+  <div class="grid gap-14 lg:grid-cols-3">
+    <div>
+      <div class="sticky top-14 grid gap-4">
+        <h2 class="title-sm" id={slugify(title)}>
+          {title}
+        </h2>
+        {content && <div class="richtext" set:html={marked.parse(content)} />}
+      </div>
+    </div>
+    <div class="lg:col-span-2">
+      <ul
+        class={`grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 `}
+      >
+        {
+          posts.map((post, index) => (
+            <li style={`--animation-delay: ${(index + 1) * 150}ms`}>
+              <ItemCard
+                content={post}
+                base_url={base_url}
+                {sizes}
+                animate={style.animate}
+              />
+            </li>
+          ))
+        }
+      </ul>
+      <div class="fade-up flex justify-end">
+        <a href={`/${base_url}`} class="btn group mr-2">
+          {t("show_more")}
+          <svg
+            class="-mr-1 h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xml:space="preserve"
+            style="enable-background: new 0 0 12 12"
+            viewBox="0 0 12 12"
+          >
+            <g
+              class="-translate-x-[20%] transition-transform duration-300 group-hover:translate-x-0"
+            >
+              <path
+                d="M9.2 6.4 6.4 9.1c-.1.1-.1.4 0 .5s.4.1.5 0l3.4-3.4c.1-.1.1-.4 0-.5L7 2.4c-.1-.1-.4-.1-.5 0-.1.1-.1.4 0 .5l2.7 2.7c.4.4.4.4 0 .8z"
+                fill="currentColor"
+                stroke="currentColor"
+                stroke-width="0.5"></path>
+              <g>
+                <path
+                  class="origin-right -translate-x-[8%] scale-x-0 transition-transform duration-300 group-hover:scale-x-75"
+                  d="M9.6 5.6H1.9c-.2 0-.3.2-.3.4s.2.4.4.4h7.7c.2 0 .4-.2.4-.4s-.3-.4-.5-.4z"
+                  fill="currentColor"
+                  stroke="currentColor"
+                  stroke-width="0.5"></path>
+              </g>
+            </g>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style lang="postcss">
+.recent-blogs ul.bloglist {
+		width: calc(100% + var(--container-spacing));
+		margin-left: calc(var(--spacing) * -1);
+		
+		@screen md {  
+			width: 100%;
+			margin-left: 0;                      
+		}
+	}
+</style>

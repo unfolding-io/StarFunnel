@@ -1,0 +1,290 @@
+---
+import { Picture } from "astro-imagetools/components";
+import { marked } from "marked";
+import { Icon } from "astro-icon";
+import Button from "@components/navigation/Button.astro";
+import VideoInline from "@components/media/VideoInline.vue";
+import VideoDialog from "@components/dialog/VideoDialog.vue";
+import VideoDialogBtn from "@components/media/VideoDialogBtn.vue";
+
+const { title, hero } = Astro.props;
+const { slug } = Astro.params;
+const hasImage = !!hero?.media?.thumbnail?.trim() || false;
+const hasBgImage = !!hero?.media?.background_image?.trim() || false;
+const hasPreviewVideo = !!hero?.media?.video_preview?.trim() || false;
+const hasVideo = !!hero?.media?.video_preview?.trim() || false;
+const hasEmbed = !!hero?.media?.video_id?.trim() || false;
+const hasMedia = hasImage || hasVideo || hasPreviewVideo;
+const mediaClass = () => {
+  if (!hero?.media?.aspect) return "";
+  if (hero.media.aspect == 1) return "aspect-1";
+  if (hero.media.aspect == 1.777) return "aspect-video";
+  if (hero.media.aspect == 1.25) return "aspect-5/4";
+  if (hero.media.aspect == 0.8) return "aspect-4/5";
+  if (hero.media.aspect == 0.5625) return "aspect-9/16";
+  return "";
+};
+---
+
+{
+  hero && (
+    <div
+      class={`hero-funnel parallax-wrap relative ${
+        hero?.style?.surface || "surface-dark"
+      } ${hero?.style?.class || ""} ${hero?.style?.layout || ""}  ${
+        hero?.style?.media || ""
+      }`}
+      transition:name={`hero_${slug || Math.random()}`}
+      id="header"
+    >
+      <div
+        class={`parallax pointer-events-none absolute inset-0 bg-${
+          hero?.style?.background || ""
+        }`}
+      />
+      {hero?.style?.pattern && (
+        <div
+          class="parallax absolute inset-0 "
+          style={`${hero?.style?.pattern || ""}  `}
+        />
+      )}
+      {hasBgImage && (
+        <div class="media parallax absolute inset-0 ">
+          <Picture
+            attributes={{
+              picture: {
+                class: "sm:h-screen ",
+                style: `opacity: ${hero?.media?.image_opacity || 0.7}`,
+              },
+            }}
+            src={hero.media.background_image}
+            width={1920}
+            height={1080}
+            ar={16 / 10}
+            alt={title}
+            breakpoints={[1000, 1280, 1440, 1536, 1920]}
+            sizes="100vw"
+            loading="eager"
+            layout="fill"
+            position="entropy"
+            artDirectives={[
+              {
+                media: "(max-width: 500px)",
+                ar: 0.6,
+                src: hero.media.background_image,
+                breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
+              },
+              {
+                media: "(max-width: 1000px)",
+                ar: 1,
+                src: hero.media.background_image,
+                breakpoints: [500, 601, 768, 820, 962, 1280, 1440, 1536, 1920],
+              },
+            ]}
+          />
+        </div>
+      )}
+
+      <div class="relative z-10 grid w-full place-items-center">
+        <div
+          class={`container-${hero?.style?.container || "xl"} py-14  ${
+            hero?.style?.layout === "row"
+              ? "hero-funnel__row-grid"
+              : "hero-funnel__col-grid"
+          }`}
+        >
+          <div class="mx-auto grid max-w-3xl gap-8 pt-20  md:pb-10 ">
+            {hero?.title && (
+              <h1 class="title" set:html={marked.parse(hero.title)} />
+            )}
+            {hero.intro && (
+              <div
+                class="balance text-lg"
+                set:html={marked.parse(hero.intro)}
+              />
+            )}
+
+            {hero.buttons && hero.buttons.length > 0 && (
+              <div class="hero-funnel__buttons mt-2 flex flex-wrap gap-4 ">
+                {hero.buttons.map((btn) => (
+                  <Button {...btn} />
+                ))}
+              </div>
+            )}
+            <slot />
+          </div>
+
+          <div class="grid place-items-center">
+            {hasMedia && (
+              <VideoDialogBtn
+                client:visible
+                video_id={hero?.media?.video_id}
+                className={`overflow-hidden rounded ${mediaClass()} ${
+                  hasEmbed ? "group" : ""
+                } ${
+                  hero.style.layout === "column" ? "max-w-lg" : ""
+                } hero-funnel__media  `}
+              >
+                {hasPreviewVideo && (
+                  <VideoInline url={hero.media.video_preview} client:idle delay>
+                    <Picture
+                      src={
+                        hero?.media?.thumbnail
+                          ? hero.media.thumbnail
+                          : "/src/assets/system/video-placeholder.jpeg"
+                      }
+                      alt={hero.title}
+                      sizes="50vw"
+                      aspect={hero.media?.aspect ? hero.media?.aspect : 1.777}
+                      format={["webp"]}
+                      fit="cover"
+                      layout="constrained"
+                      placeholder="blurred"
+                      fadeInTransition={false}
+                      preload="webp"
+                      position="entropy"
+                      loading="eager"
+                      breakpoints={[420, 725, 960]}
+                    />
+                    {hasEmbed && (
+                      <div class="absolute inset-0  z-50  grid place-items-center">
+                        <Icon
+                          name="play"
+                          class="h-20 w-20 text-secondary transition-transform duration-300 group-hover:scale-125"
+                        />
+                      </div>
+                    )}
+                  </VideoInline>
+                )}
+                {!hasPreviewVideo && (
+                  <Picture
+                    src={hero.media.thumbnail}
+                    alt={hero.title}
+                    sizes="50vw"
+                    aspect={hero.media?.aspect ? hero.media?.aspect : 1.777}
+                    format={["webp"]}
+                    fit="cover"
+                    layout="constrained"
+                    placeholder="blurred"
+                    position="entropy"
+                    loading="eager"
+                    breakpoints={[420, 725, 960]}
+                  />
+                )}
+              </VideoDialogBtn>
+            )}
+          </div>
+        </div>
+      </div>
+      <div class={`hero-funnel__divider z-0 -mb-px `}>
+        <span class="surface-base  -mb-px h-72 w-full shrink-0 md:-mb-20 md:h-40" />
+        <div class="surface-base h-full w-full" />
+      </div>
+    </div>
+  )
+}
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="0"
+  height="0"
+  viewBox="0 0 1200 220.2"
+>
+  <defs>
+    <clipPath
+      id="heroclip"
+      clipPathUnits="objectBoundingBox"
+      transform="scale(0.0008333, 0.0045413)"
+    >
+      <path
+        d="M0 82.8v137.4h1200V14.3c-67.8-23.1-144.3-15.5-214.3 3-79 20.8-161.9 61.8-241.8 78.6-82.3 17.3-168.1 16.3-250.5-.4-57.8-11.7-114-31.1-172-41.9C213.6 33.9 102.5 44 0 82.8z"
+      ></path>
+    </clipPath>
+  </defs>
+</svg>
+{
+  hasEmbed && (
+    <VideoDialog
+      client:idle
+      video_id={hero?.media?.video_id}
+      embed={hero?.media?.embed}
+    >
+      <Icon name="close" class="w-6" />
+    </VideoDialog>
+  )
+}
+
+<style lang="postcss" is:global>
+  
+  .title {
+    strong, bold {
+      @apply text-primary;
+    }
+  }
+
+  .bg-gradient { 
+    will-change: transform;
+    backface-visibility: hidden; 
+    background-image: 
+    
+    radial-gradient(50vMax at -10vw -20vw, theme(colors.secondary) 0%, theme(colors.secondary / 80%)  40%, theme(colors.secondary / 0%)  100%),
+    radial-gradient(60vMax at 100vw 100vh, theme(colors.primary) 0%, theme(colors.primary / 80%)  40%, theme(colors.primary / 0%)  100%);
+    
+     &:after {
+    content: "";
+    @apply sticky w-full h-full block inset-0 z-20 overflow-hidden opacity-20 pointer-events-none;
+    mix-blend-mode: overlay; 
+    filter: url(#noiseFilter);
+  } 
+  }
+
+  .hero-funnel {
+    min-height: max(80vh, 30rem);
+    @apply z-20 overflow-hidden grid place-items-center;
+
+    &__media {
+      max-height: max(20rem, 70vh);
+      
+    }
+    &__buttons {
+      @apply justify-center ;
+    }
+
+    &__col-grid {
+      @apply grid grid-cols-1 gap-10 place-items-center text-center md:text-left;
+
+      @screen md {
+        grid-template-columns: 5fr 4fr;
+      }
+
+      .hero-funnel__buttons {
+        @apply md:justify-start;
+      } 
+
+
+    }
+
+     &__row-grid {
+      @apply grid grid-cols-1 text-center gap-10 ;
+
+      
+
+
+    }
+    &__divider {
+      @apply absolute bottom-0 left-0 right-0 overflow-hidden flex flex-col;
+        
+        min-height: 5rem;
+        min-width: 1200px;
+        height: calc(100% - 80vh);
+        
+        & > span {
+          @apply block;
+           clip-path: url(#heroclip);
+        }
+
+    }
+
+  
+    
+  }
+</style>

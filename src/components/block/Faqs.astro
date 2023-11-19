@@ -1,0 +1,35 @@
+---
+import { marked } from "marked";
+import FaqItem from "@components/common/FaqItem.vue";
+
+const { title, items, style, id } = Astro.props;
+---
+
+<div class={`container-${style.container} grid `}>
+  <h2 class="title-sm fade-in">{title}</h2>
+
+  <div
+    class={`accordion relative py-5 surface-base-overlay fade-up`}
+    id={id}
+    itemtype="https://schema.org/FAQPage"
+  >
+    {
+      items.map((item, index) => (
+        <FaqItem
+          {index}
+          title={item.title}
+          id={item.id}
+          client:idle
+          className={items.length === index + 1 ? "last" : ""}
+        >
+          <div class="faq-grid ">
+            <div
+              class="richtext z-20 pb-10"
+              set:html={marked.parse(item.description)}
+            />
+          </div>
+        </FaqItem>
+      ))
+    }
+  </div>
+</div>

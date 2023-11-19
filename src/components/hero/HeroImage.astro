@@ -1,0 +1,123 @@
+---
+import { Picture } from "astro-imagetools/components";
+import ItemFilter from "@components/navigation/ItemFilter.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+import { marked } from "marked";
+
+const {
+  title,
+  thumbnail,
+  intro,
+  tag,
+  filter,
+  filters,
+  filter_type,
+  style,
+  pubDate,
+  base_url,
+} = Astro.props;
+
+const { slug } = Astro.params;
+---
+
+<div
+  class={`relative rounded mt-28  mb-14 overflow-hidden parallax-wrap container-md ${
+    style.hero_surface || "surface-dark"
+  }`}
+  transition:name={`hero_${slug || Math.random()}`}
+  id="header"
+>
+  {
+    thumbnail && (
+      <div class="media parallax absolute  inset-0 w-full">
+        <Picture
+          attributes={{
+            picture: {
+              style: `opacity: ${style.hero_image_opacity || 0.7}`,
+            },
+          }}
+          src={thumbnail}
+          ar={21 / 9}
+          alt={title}
+          breakpoints={[1000, 1280, 1440, 1536, 1920]}
+          sizes="100vw"
+          loading="eager"
+          layout="fill"
+          position="entropy"
+          artDirectives={[
+            {
+              media: "(max-width: 500px)",
+              ar: 0.6,
+              src: thumbnail,
+              breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
+            },
+            {
+              media: "(max-width: 1000px)",
+              ar: 1,
+              src: thumbnail,
+              breakpoints: [500, 601, 768, 820, 962, 1280, 1440, 1536, 1920],
+            },
+          ]}
+        />
+      </div>
+    )
+  }
+
+  <div class="relative z-10 grid place-items-center bg-dark bg-opacity-20">
+    <div class="container-sm pb-20 pt-40">
+      <div class="max-w-3xl">
+        {
+          pubDate && (
+            <span class="text-overline">
+              <FormattedDate date={pubDate} />
+            </span>
+          )
+        }
+        <h1 class="title" set:html={title} />
+        {
+          intro && (
+            <div class="subtitle balance py-2" set:html={marked.parse(intro)} />
+          )
+        }
+
+        <slot />
+      </div>
+    </div>
+  </div>
+  <div class="absolute right-10 top-5 z-10">
+    {
+      tag && (
+        <ItemFilter
+          filters={tag}
+          className="mt-4 justify-start"
+          links={true}
+          {base_url}
+        />
+      )
+    }
+
+    {
+      filters && (
+        <ItemFilter
+          filters={filters}
+          className="mt-4"
+          links={true}
+          active={filter}
+          type={filter_type}
+          {base_url}
+        />
+      )
+    }
+  </div>
+</div>
+
+<style lang="postcss" is:global>
+  .media {
+    
+  }
+  .title {
+    strong {
+      @apply text-primary ;
+    }
+  }
+</style>
