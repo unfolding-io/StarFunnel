@@ -1055,7 +1055,6 @@ export const blocks = {
           name: "items",
           label: t("items"),
           widget: "list",
-
           collapsed: true,
           fields: [
             {

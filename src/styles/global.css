@@ -35,18 +35,16 @@
     --popper-theme-box-shadow: 0 6px 30px -6px rgba(0, 0, 0, 0.25);
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --color-primary: 135 94 212;
-      --color-secondary: 107 154 199;
-      --color-accent: 119 112 150;
-      --color-warning: 202 121 45;
-      --color-danger: 180 25 14;
-      --color-success: 77 137 101;
-      --color-dark: 25 28 38;
-      --color-light: 243 241 239;
-      --color-info: 25 28 38;
-    }
+  [data-theme="dark"] {
+    --color-primary: 243 76 24;
+    --color-secondary: 250 195 12;
+    --color-accent: 52 62 112;
+    --color-warning: 202 121 45;
+    --color-danger: 180 25 14;
+    --color-success: 77 137 101;
+    --color-dark: 25 28 38;
+    --color-light: 255 255 255;
+    --color-info: 25 28 38;
   }
 }
 html {

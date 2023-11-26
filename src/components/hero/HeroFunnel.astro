@@ -259,23 +259,17 @@ const mediaClass = () => {
       .hero-funnel__buttons {
         @apply md:justify-start;
       } 
-
-
     }
 
      &__row-grid {
       @apply grid grid-cols-1 text-center gap-10 ;
-
-      
-
-
     }
     &__divider {
       @apply absolute bottom-0 left-0 right-0 overflow-hidden flex flex-col;
         
         min-height: 5rem;
         min-width: 1200px;
-        height: calc(100% - 80vh);
+        
         
         & > span {
           @apply block;
@@ -284,7 +278,11 @@ const mediaClass = () => {
 
     }
 
-  
+  &.row {
+    .hero-funnel__divider {
+      height: calc(100% - 80vh);
+    }
+  }
     
   }
 </style>
