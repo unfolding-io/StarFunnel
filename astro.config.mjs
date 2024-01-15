@@ -12,8 +12,8 @@ const remarkEmbedder = fauxRemarkEmbedder.default;
 const oembedTransformer = fauxOembedTransformer.default;
 import vue from "@astrojs/vue";
 /** @type {import('astro-m2dx').Options} */
-import prefetch from "@astrojs/prefetch";
-import compress from "astro-compress";
+import icon from "astro-icon";
+
 const m2dxOptions = {
   exportComponents: true,
   unwrapImages: true,
@@ -24,6 +24,7 @@ const m2dxOptions = {
 export default defineConfig({
   site: "https://starfunnel.unfolding.io",
   integrations: [
+    icon(),
     mdx({}),
     sitemap(),
     tailwind(),
@@ -31,14 +32,6 @@ export default defineConfig({
       appEntrypoint: "/src/pages/_app",
     }),
     astroImageTools,
-    /* prefetch(), */
-    compress({
-      CSS: true,
-      HTML: false,
-      Image: false,
-      JavaScript: true,
-      SVG: true,
-    }),
   ],
   markdown: {
     extendDefaultPlugins: true,
@@ -71,6 +64,9 @@ export default defineConfig({
   },
   build: {
     inlineStylesheets: "always",
+  },
+  prefetch: {
+    defaultStrategy: "viewport",
   },
   scopedStyleStrategy: "attribute",
 });
