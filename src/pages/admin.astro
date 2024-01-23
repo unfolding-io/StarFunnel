@@ -8,6 +8,7 @@ import menuIcon from "@icons/menu.svg";
 import settingsIcon from "@icons/settings.svg";
 import portfolioIcon from "@icons/portfolio.svg";
 import shopIcon from "@icons/shop.svg";
+const cmsVersion = "v4.0.1";
 
 const lang = import.meta.env.WEBSITE_LANGUAGE;
 const url = Astro.site;
@@ -39,7 +40,7 @@ const config = {
     <title>StarFunnel Admin | by unfolding.io</title>
     <link
       rel="stylesheet"
-      href="https://unpkg.com/@staticcms/app@^v3.4.5/dist/main.css"
+      href={`https://unpkg.com/@staticcms/app@^${cmsVersion}/dist/main.css`}
     />
     <script
       is:inline
@@ -91,7 +92,7 @@ const config = {
   <body>
     <script
       is:inline
-      src="https://unpkg.com/@staticcms/app@^v3.4.5/dist/static-cms-app.js"
+      src={`https://unpkg.com/@staticcms/app@^${cmsVersion}/dist/static-cms-app.js`}
     ></script>
     <script
       is:inline

@@ -1,4 +1,4 @@
-import { encode } from "https://deno.land/std/encoding/base64.ts";
+import { encodeBase64 } from "https://deno.land/std@0.212.0/encoding/base64.ts";
 
 let {
   MAILGUN_API_KEY,
@@ -22,7 +22,7 @@ export default async (request, context) => {
   const { email, name, message, topicEmail } = await request.json();
 
   if (!email || email === "") return Response.json({ error: "Missing email" });
-  const authHeader = "Basic " + encode(`api:${MAILGUN_API_KEY}`);
+  const authHeader = "Basic " + encodeBase64(`api:${MAILGUN_API_KEY}`);
 
   const headers = {
     "Access-Control-Allow-Origin": "*",

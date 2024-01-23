@@ -1,5 +1,3 @@
-import { encode } from "https://deno.land/std/encoding/base64.ts";
-
 const { SLACK_CHANNEL_ID, SLACK_TOKEN } = Deno.env.toObject();
 
 const formUrl = "https://slack.com/api/chat.postMessage";
