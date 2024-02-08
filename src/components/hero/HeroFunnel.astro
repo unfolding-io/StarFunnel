@@ -204,7 +204,7 @@ const mediaClass = () => {
 {
   hasEmbed && (
     <VideoDialog
-      client:idle
+      client:only
       video_id={hero?.media?.video_id}
       embed={hero?.media?.embed}
     >

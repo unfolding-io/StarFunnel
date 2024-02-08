@@ -240,7 +240,7 @@ const hasEmbed = !!media?.video_id?.trim() || false;
 
 {
   hasEmbed && (
-    <VideoDialog client:idle video_id={media?.video_id} embed={media?.embed}>
+    <VideoDialog client:only video_id={media?.video_id} embed={media?.embed}>
       <Icon name="close" class="w-6" />
     </VideoDialog>
   )
