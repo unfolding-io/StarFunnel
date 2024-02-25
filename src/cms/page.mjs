@@ -76,7 +76,7 @@ export const page = {
               name: "background",
               label: t("background"),
               widget: "select",
-              options: ["gradient", "plain"],
+              options: ["gradient", "plain", "gradient-reversed"],
               default: "image",
             },
 

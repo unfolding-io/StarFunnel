@@ -3,9 +3,9 @@
 @layer base {
   :root {
     --font-var-settings-headings: "wght" 700, "opsz" 9;
-    --color-primary: 243 76 24;
-    --color-secondary: 250 195 12;
-    --color-accent: 52 62 112;
+    --color-primary: 154 56 243;
+    --color-secondary: 9 247 175;
+    --color-accent: 250 250 250;
     --color-warning: 202 121 45;
     --color-danger: 180 25 14;
     --color-success: 77 137 101;
@@ -36,8 +36,8 @@
   }
 
   [data-theme="dark"] {
-    --color-primary: 243 76 24;
-    --color-secondary: 250 195 12;
+    --color-primary: 154 56 243;
+    --color-secondary: 9 247 175;
     --color-accent: 52 62 112;
     --color-warning: 202 121 45;
     --color-danger: 180 25 14;

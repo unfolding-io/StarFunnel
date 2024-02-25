@@ -8,32 +8,33 @@ style:
   hero_template: image
   template: full
   container: sm
-  content_class: py-20 text-center
+  content_class: hidden
   page_class: ""
   card_template: grid
   hero_surface: surface-dark
   hero_image_opacity: ""
-  nav_color: light
+  nav_color: normal
 thumbnail: /src/assets/speed.jpeg
 pubDate: Jul 08 2022
 hero:
   media:
-    thumbnail: /src/assets/hamster_video.jpg
-    video_preview: /video/hamster_coder.mp4
-    aspect: 1.777
-    embed: youtube
-    video_id: ngbvguu1Zzs
+    thumbnail: src/assets/clawdius.png
+    video_preview: ""
+    aspect: 1
+    embed: ""
+    video_id: ""
     background_image: ""
     image_opacity: "0.1"
   background: pattern
   style:
     layout: column
-    background: gradient
+    background: gradient-reversed
     image_opacity: ""
     container: xl
-    surface: surface-dark
+    surface: bg-slate-200 text-dark dark:bg-slate-800 dark:text-white
+    class: ""
   title: |
-    StarFunnel, the **Astro** powered landing page builder
+    William & Mary's ninth annual **hackathon**
   intro: >
     Elevate your business with plain funnel building magic. Start creating your
     blazing fast Astro sales funnel for saas, product, service or app.
@@ -46,65 +47,10 @@ hero:
       color: surface-transparent
       href: "#contact"
 blocks:
-  - type: features
-    component: Features
-    style:
-      container: lg
-      block_class: py-20
-    features:
-      - content: >
-          Transform your template's appearance with the beloved Tailwind CSS
-          framework. Easily customize your design, bringing your unique vision
-          to life.
-        icon: /src/icons/tailwind.svg
-        color: surface-secondary
-        title: Tailwind CSS
-      - icon: /src/icons/phone.svg
-        content: >
-          Our form supports topics, enabling submissions to go directly to Slack
-          or services like SendGrid/Postmark. You can assign different email
-          addresses or Slack channels to specific topics.
-        color: surface-secondary
-        href: ""
-        title: Contact Form
-      - color: surface-secondary
-        icon: /src/icons/email.svg
-        content: >
-          Our Mailchimp integration empowers you to effortlessly create multiple
-          forms with robust tag and list support. Customize your interactions,
-          streamline data organization, and enhance your marketing strategy
-          seamlessly.
-        title: Newsletters
-      - icon: /src/icons/blocks-group-solid.svg
-        content: >
-          Craft your perfect page effortlessly with our selection of versatile
-          blocks. Customize and extend your page exactly the way you want it.
-        color: surface-secondary
-        href: ""
-        title: Page Block Builder
-      - href: "#"
-        icon: /src/icons/git.svg
-        content: >
-          With Astro + Static CMS, your content finds its home in a Git
-          repository, ensuring efficient content management and collaboration.
-        color: surface-secondary
-        title: Git-Based
-      - content: >
-          Give your visitors the freedom to choose their preferred color scheme,
-          ensuring a personalized browsing experience.
-        color: surface-secondary
-        icon: /src/icons/dark-theme-20-filled.svg
-        title: Light & Darkmode
-    content: |+
-      ## StarFunnel Features
-
-
-
-
   - type: text_media
     component: TextMedia
     style:
-      container: md
+      container: lg
       template: column
       reverse: true
       animate: false
@@ -112,15 +58,15 @@ blocks:
       image_opacity: ""
     media:
       image_size: "66"
-      thumbnail: /src/assets/speed.jpeg
+      thumbnail: /src/assets/collaboration.jpeg
       title: Image
       embed: youtube
       image_opacity: ""
-    content: >-
-      ## **A green page speed score** Optimized Speed and Accessibility
+    content: >
+      ## **Who & What** (Re)introducing: TribeHacks
 
 
-      Achieving a in the high 90 page speed score and adhering to WCAG 2.1 AA standards, we demonstrate our unwavering commitment. Our dedication to optimizing speed and ensuring accessibility guarantees a superior user experience for all.
+      TribeHacks IX (formerly known as Cypher) is William & Mary's ninth hackathon. TribeHacks aims to create a welcoming and supportive environment for anyone to enjoy and explore computer sceince! Come join us to attend workshops and talks, connect with potential employers, and compete for prizes!
   - type: text_media
     component: TextMedia
     style:
@@ -134,17 +80,16 @@ blocks:
       image_size: "66"
       title: Image
       aspect: 1.777
-      thumbnail: /src/assets/hamster_video.jpg
-      video_preview: /video/hamster_coder.mp4
+      thumbnail: /src/assets/girlslaughing.jpg
+      video_preview: ""
       embed: youtube
-      video_id: dsTXcSeAZq8
+      video_id: "null"
       image_opacity: ""
     content: >
-      ## **Secure by design** Static sites are not only fast but also inherently
-      secure
+      ## **When & Where** Build in the Burg
 
 
-      By eliminating databases and server-side code, static sites become less prone to attacks. Embrace the robust security of static architecture for a safer online presence.
+      TribeHacks IX will take place in-person on April 13-14. Hackers will be able to join us at the Swem Library on the William & Mary campus. 
   - type: text_media
     component: TextMedia
     style:
@@ -158,15 +103,14 @@ blocks:
       image_size: "50"
       title: Image
       aspect: 1.777
-      thumbnail: /src/assets/collecting_leads.jpeg
+      thumbnail: /src/assets/smiling_people.jpg
       embed: youtube
       image_opacity: ""
     content: >
-      ## **Page speed = conversion** Speed Up Conversions & Hoard Leads with
-      Ease!
+      ## **Projects & Prizes** Make something great
 
 
-      Unlock higher conversions with StarFunnel! We know the equation: Page Speed equals Conversion. Our focus is simple – speedy lead harvesting for a stellar customer experience. Fast site, happy customers, and effortless conversions – that's StarFunnel
+      At Tribehacks, any kind of project can count as a "hack". Code or no code, if you can make it in a weekend, we want to see what you can do! You can submit your project for judging against a wide variety of categories, or participate in sponsor or cybersecurity challenges.
   - type: text_media
     component: TextMedia
     style:
@@ -180,15 +124,14 @@ blocks:
       image_size: "66"
       title: Image
       aspect: 1.777
-      thumbnail: /src/assets/eco-aware.jpeg
+      thumbnail: /src/assets/petcat.jpg
       embed: youtube
       image_opacity: ""
     content: >
-      ## **Green & Lean** StarFunnel's Small & Speedy Solution for a Greener
-      Web!
+      ## **Beginners & Experts** TribeHacks is for everyone
 
 
-      Embrace sustainability with StarFunnel! Our smaller, faster site not only means quicker conversions but also a lighter environmental footprint. StarFunnel consumes up to 90% less CO2 than a typical WordPress website, averaging just 0.06g CO2 per view. Join us in making the web greener, one swift and eco-friendly click at a time!
+      William & Mary's liberal arts model makes this event so exciting. This is an opportunity to use technology to enhance the things you're already interested and skilled in. Whether you've pioneered new machine learning techniques or you've never written a line of code in your life, we've got you covered. We are primarily geared towards college students, but we welcome recent graduates and older high school students as well. 
   - type: recentitems
     component: RecentItems
     page_type: blog
@@ -244,7 +187,8 @@ blocks:
         title: Can I remove the attribution?
         description: >
           If you wish to remove the attribution, you have the option to purchase
-          a [license](https://nebulix.unfolding.io/shop/starfunnel-license/) for $149.95 USD.
+          a [license](https://nebulix.unfolding.io/shop/starfunnel-license/) for
+          $149.95 USD.
       - id: d89f61b4-0e72-40f0-9a08-d424752f4474
         title: Does StarFunnel come with a CMS?
         description: >

@@ -221,13 +221,31 @@ const mediaClass = () => {
     }
   }
 
+  .bg-gradient-reversed { 
+    will-change: transform;
+    backface-visibility: hidden; 
+    background-image: 
+    
+    radial-gradient(60vMax at -10vw -20vw, theme(colors.primary) 0%, theme(colors.primary / 80%)  40%, theme(colors.primary / 0%)  100%),
+    radial-gradient(50vMax at 100vw 100vh, theme(colors.secondary) 0%, theme(colors.secondary / 80%)  40%, theme(colors.secondary / 0%)  100%);
+    
+     &:after {
+    content: "";
+    @apply sticky w-full h-full block inset-0 z-20 overflow-hidden opacity-20 pointer-events-none;
+    mix-blend-mode: overlay; 
+    filter: url(#noiseFilter);
+  } 
+  }
+
+  
+
   .bg-gradient { 
     will-change: transform;
     backface-visibility: hidden; 
     background-image: 
     
-    radial-gradient(50vMax at -10vw -20vw, theme(colors.secondary) 0%, theme(colors.secondary / 80%)  40%, theme(colors.secondary / 0%)  100%),
-    radial-gradient(60vMax at 100vw 100vh, theme(colors.primary) 0%, theme(colors.primary / 80%)  40%, theme(colors.primary / 0%)  100%);
+    radial-gradient(60vMax at -10vw -20vw, theme(colors.secondary) 0%, theme(colors.secondary / 80%)  40%, theme(colors.secondary / 0%)  100%),
+    radial-gradient(50vMax at 100vw 100vh, theme(colors.primary) 0%, theme(colors.primary / 80%)  40%, theme(colors.primary / 0%)  100%);
     
      &:after {
     content: "";
