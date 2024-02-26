@@ -36,16 +36,16 @@ hero:
   title: |
     William & Mary's ninth annual **hackathon**
   intro: >
-    Elevate your business with plain funnel building magic. Start creating your
-    blazing fast Astro sales funnel for saas, product, service or app.
+    Join us at Swem Library for a weekend of creativity, learning, and fun,
+    whether you've written a line of code or not!
   buttons:
     - icon_only: false
-      label: Learn more
-      href: "#more"
+      label: Register
+      href: https://forms.gle/gjaVDwnQk39KdQP2A
     - icon_only: false
-      label: Contact Us
+      label: Volunteer
       color: surface-transparent
-      href: "#contact"
+      href: https://forms.gle/EQRDime1ouv5YFGq8
 blocks:
   - type: text_media
     component: TextMedia
@@ -132,97 +132,46 @@ blocks:
 
 
       William & Mary's liberal arts model makes this event so exciting. This is an opportunity to use technology to enhance the things you're already interested and skilled in. Whether you've pioneered new machine learning techniques or you've never written a line of code in your life, we've got you covered. We are primarily geared towards college students, but we welcome recent graduates and older high school students as well. 
-  - type: recentitems
-    component: RecentItems
-    page_type: blog
-    count: 4
-    style:
-      container: md
-      animate: true
-      surface: surface-dark
-    post_tag:
-      - Docs
-    title: Check out our documentation
-    content: >
-      Getting started is easy, just clone the repo, configure and you are ready
-      to go.
   - type: faq
     component: Faq
     title: FAQ's
     style:
       container: md
+      surface: surface-dark
     id: a3f164ee-e7bd-48c2-a118-0233f7d02b1b
     items:
       - id: 6687141f-b8ce-4d67-ba1f-cf838551eb02
-        title: Where can I host StarFunnel?
+        title: What is a hackathon?
         description: >
-          StarFunnel can be easily hosted on [Netlify](https://www.netlify.com/)
-          out of the box. If you prefer a different platform, you'll need to
-          deploy and link edge functions to ensure that the forms continue to
-          function seamlessly.
+          A hackathon is a weekend-long coding event where students learn new
+          skills, build interesting projects, and have fun! We will have free
+          merch, free food, and industry professionals to connect with! 
       - id: 03c89715-772a-4d6d-8e07-589f8be149d9
-        title: What newsletter platforms are supported?
+        title: Do I  need a team?
         description: >
-          Currently, StarFunnel integrates with [MailChimp
-          ](https://mailchimp.com/) for newsletter services.
+          Nope! Submissions can have 1-4 members, and we'll also have a
+          team-building event at the start of the hackathon.
       - id: 13236024-260c-4df9-8026-8979f92acffa
-        title: How is the contact form handled?
+        title: Do I need coding experience?
         description: >
-          The contact form submissions can be received through
-          [Postmark](https://postmarkapp.com/) or
-          [MailGun](https://www.mailgun.com/) Alternatively, you can set it up
-          to post directly to a [Slack](https://slack.com/) channel.
+          No! Tribehacks is designed for students of all skill levels to learn
+          and have fun. All you need for Tribehacks is yourself and your brain!
+          Additionally, there will be mentors available throughout the weekend
+          for help.
       - id: b9b4dbd5-e4e3-4653-be11-59686c752f03
-        title: How does the contact form topic feature work?
+        title: Can I start on my project before the hackathon?
         description: >
-          StarFunnel's contact form supports multiple topics, allowing you to
-          connect a unique email or Slack channel to each specific topic.
+          Generally, no. The judging criteria assumes that you are starting with
+          just an idea at the beginning of the weekend! We do allow hackers to
+          continue projects from before Tribehacks, but we require that you be
+          clear about what work you did before the event.
       - id: 4060ab29-325f-40b4-8013-3981bb6054b4
-        title: Is StarFunnel's landing page builder free?
-        description: >+
-          Yes, StarFunnel's landing page builder is released under the [CC BY
-          4.0 License](/license)
-
-      - id: adc5ac8b-4406-475a-9e08-c1781d4cbc74
-        title: Can I remove the attribution?
+        title: What if I don't do a project, or I don't finish?
         description: >
-          If you wish to remove the attribution, you have the option to purchase
-          a [license](https://nebulix.unfolding.io/shop/starfunnel-license/) for
-          $149.95 USD.
-      - id: d89f61b4-0e72-40f0-9a08-d424752f4474
-        title: Does StarFunnel come with a CMS?
-        description: >
-          Yes, StarFunnel is built on [Static CMS](https://www.staticcms.org/)
-          an open-source CMS based on Git that supports multiple users.
-      - id: 2a8db3a9-2daf-4f75-a493-c3964454f7b0
-        title: Does StarFunnel come with user login functionality?
-        description: >
-          While StarFunnel provides forms and a starter edge function to help
-          you begin, it doesn't include the authentication logic or platform.
-          You'll need to implement your authentication system or integrate with
-          a third-party authentication service to enable user accounts and
-          redirects.
-  - type: popup
-    component: AnnoyingPopup
-    timing:
-      delay: 1
-      duration: 7
-      on_load: false
-    content: |
-      ## Need help with kickstarting your project!
-
-      Get in touch with us and we will help you get started, now with 20% off.
-    code: GET-HELP-NOW
-    style:
-      surface: surface-dark
-    media:
-      thumbnail: /src/assets/popups.jpeg
-      image_opacity: "0.3"
-    buttons:
-      - icon_only: false
-        label: More info
-        href: /kickstart-your-project
-    link: annoying-popup
+          You don't have to submit a project to participate! Tribehacks is all
+          about learning and having fun while doing so. You can come just for
+          our interesting workshops and talks, to hang out with your friends, or
+          to compete! 
   - type: text_media
     component: TextMedia
     style:
@@ -232,13 +181,12 @@ blocks:
       animate: true
       block_class: my-0
       image_opacity: ""
-    content: >
-      ## Anoying Popups
+    content: |
+      ## Convinced?
 
-
-      Add popups on page load or scroll location, you can set a delay and even duration!
+      Register now to be sure you get a t-shirt and food for the event!
     media:
-      thumbnail: /src/assets/popups.jpeg
+      thumbnail: /src/assets/tribehacksvr.jpg
       aspect: ""
       image_size: ""
       title: Image
@@ -246,9 +194,8 @@ blocks:
       image_opacity: "0.5"
     buttons:
       - icon_only: false
-        label: Open Popup
-        href: "#annoying-popup"
-        icon: /src/icons/shop.svg
+        label: Register
+        href: https://forms.gle/gjaVDwnQk39KdQP2A
         color: surface-primary
     block_class: py-20 text-center
 og_image: /src/assets/og_image_starfunnel.jpg
