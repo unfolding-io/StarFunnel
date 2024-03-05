@@ -31,132 +31,140 @@ hero:
       label: Email us
       href: mailto:wm.tribehacks@gmail.com
 blocks:
-  - type: gallery
-    component: ImageGallery
-    title: ""
-    style:
-      container: md
-      animate: false
-      block_class: -my-4
-    images:
-      - /src/assets/sponsor-1.jpg
-      - /src/assets/sponsor-2.jpg
-      - /src/assets/sponsor-3.jpg
-    aspect: ""
-  - type: pricing
-    component: PricingTable
-    title: Pricing
+  - type: features
+    component: Features
     style:
       container: lg
+      block_class: py-0
+    features:
+      - title: 60%
+        content: |
+          First-time hackers
+      - title: 33%
+        content: Non-CS majors
+      - title: 200+
+        content: |
+          Registrants
+      - title: 30+
+        content: |
+          Projects demoed
+      - title: 20+
+        content: |
+          Mentors and judges
+    content: "## By the numbers"
+  - type: pricing
+    component: PricingTable
+    title: Benefits
+    style:
+      container: xl
+      block_class: sm:py-10
+      surface: surface-dark
     prices:
-      - title: Free
-        intro: Host it yourself
-        price: $0,-
+      - title: Bronze
+        intro: " "
+        price: $2,000
         features:
-          - label: Free for commercial use
+          - label: Send Mentors
             icon: /src/icons/check-o.svg
             icon_class: text-success
-          - label: Basic support
+          - label: Sponsor Discord Channel
             icon: /src/icons/check-o.svg
-            value: GitHub
             icon_class: text-success
-          - label: Remove attribution
-            icon: /src/icons/close-o.svg
-            icon_class: text-danger
-          - label: Premium Support
-            icon: /src/icons/close-o.svg
-            icon_class: text-danger
-        surface: surface-secondary
-        buttons:
-          - icon_only: false
-            label: Get started
-            href: https://github.com/unfolding-io/StarFunnel
-            color: surface-secondary
-      - title: No attribution
-        intro: Host it yourself
-        price: $149.95
+          - label: Small logo on our web site and t-shirt
+            icon: /src/icons/check-o.svg
+            icon_class: text-success
+          - label: Speak during the sponsor slide
+            icon: /src/icons/check-o.svg
+            icon_class: text-success
+          - label: Distribute swag
+            icon: /src/icons/check-o.svg
+            icon_class: text-success
+        surface: bg-amber-700 text-white
+        buttons: []
+      - title: Silver
+        intro: " "
+        price: $4,000
         features:
-          - label: Free for commercial use
+          - label: Everything in Bronze
             icon: /src/icons/check-o.svg
             icon_class: text-success
-          - label: Basic support
-            icon: /src/icons/check-o.svg
-            value: GitHub
-            icon_class: text-success
-          - label: Remove attribution
+          - label: Large logo on our web site and t-shirt
             icon: /src/icons/check-o.svg
             icon_class: text-success
-          - label: Premium Support
-            icon: /src/icons/close-o.svg
-            icon_class: text-danger
-        surface: surface-primary
-        buttons:
-          - icon_only: false
-            label: Buy Your License
-            href: https://nebulix.unfolding.io/shop/starfunnel-license/
-            color: surface-primary
-      - title: Kickstart Your Project
-        intro: We help you install and customize your website
-        price: $999,-
+          - label: Speak during an individual slide
+            icon: /src/icons/check-o.svg
+            icon_class: text-success
+          - label: Resume access after TribeHacks
+            icon: /src/icons/check-o.svg
+            icon_class: text-success
+          - label: Access to a Sponsor Table
+            icon: /src/icons/check-o.svg
+            icon_class: text-success
+        surface: bg-gray-400 text-dark
+        buttons: []
+      - title: Gold
+        intro: " "
+        price: $6,000
         features:
-          - label: Free for commercial use
+          - label: Everything in Silver
             icon: /src/icons/check-o.svg
             icon_class: text-success
-          - label: Basic support
-            icon: /src/icons/check-o.svg
-            value: GitHub
-            icon_class: text-success
-          - label: Remove attribution
+          - label: XL logo on our web site and t-shirt
             icon: /src/icons/check-o.svg
             icon_class: text-success
-          - label: Premium Support
+          - label: Present sponsor challenge
             icon: /src/icons/check-o.svg
             icon_class: text-success
-            value: 10h
-        price_sufix: from
-        price_suffix: from
-        surface: surface-secondary
-        buttons:
-          - icon_only: false
-            label: More info
-            href: /kickstart-your-project
-            color: surface-secondary
-      - title: Custom Pro
-        intro: Let us know what you need and we will make it happen, custom
-          integrations, custom blocks or custom design. We are here for you!
-        price: On Request
+          - label: Host a demo, tech talk, or Q&A
+            icon: /src/icons/check-o.svg
+            icon_class: text-success
+          - label: Instant resume access
+            icon: /src/icons/check-o.svg
+            icon_class: text-success
+          - label: Access to a private sponsor room
+            icon: /src/icons/check-o.svg
+            icon_class: text-success
+          - label: Sponsor a meal
+            icon: /src/icons/check-o.svg
+            icon_class: text-success
+        surface: bg-yellow-500 text-dark
+        buttons: []
+      - title: Platinum
+        intro: " "
+        price: $8,000
         features:
-          - label: Free for commercial use
+          - label: Everything in Gold
             icon: /src/icons/check-o.svg
             icon_class: text-success
-          - label: Basic support
+          - label: XXL logo on our web site and t-shirt
             icon: /src/icons/check-o.svg
             icon_class: text-success
-          - label: Remove attribution
+          - label: Judge the final round
             icon: /src/icons/check-o.svg
             icon_class: text-success
-          - label: Premium Support
+          - label: Present the top prizes (limited)
             icon: /src/icons/check-o.svg
             icon_class: text-success
-          - label: Custom Design
+        surface: bg-zinc-100 text-dark
+        buttons: []
+      - title: Partner
+        intro: Become the exclusive official partner of TribeHacks IX. Nearly all
+          TribeHacks IX branding will include your company logo and we’ll work
+          with you to make sure your company shines in front of our hackers.
+        price: $10,000
+        features:
+          - label: Everything in Platinum
             icon: /src/icons/check-o.svg
             icon_class: text-success
-          - label: Custom Integrations
+          - label: Limit one company
             icon: /src/icons/check-o.svg
             icon_class: text-success
-          - label: Custom Blocks
-            icon: /src/icons/check-o.svg
-            icon_class: text-success
-          - label: Custom Layouts
+          - label: Logo alongside nearly all branding
             icon: /src/icons/check-o.svg
             icon_class: text-success
         price_sufix: p/m
-        surface: surface-accent
-        buttons:
-          - icon_only: false
-            label: Contact
-            href: "#contact"
-            color: surface-accent
+        surface: bg-blue-500 text-white
+        buttons: []
   - type: text_media
     component: TextMedia
     style:
@@ -170,12 +178,13 @@ blocks:
       image_opacity: ""
       embed: youtube
       aspect: 1.777
-      thumbnail: /src/assets/helpdesk.jpeg
-    content: >-
-      ## Curious about pricing? 
+      thumbnail: /src/assets/sponsor-1.jpg
+    content: >+
+      ## **Questions?** 
 
 
-      Or in need of specific features, blocks, or custom integrations? Drop us a message – we're here to assist you!
+      Our team will be happy to answer any questions you may have or put together a custom sponsorship package. Please email us at wm.tribehacks@gmail.com, or email one of our co-leads, Vedha Navudu at [vnavudu@wm.edu](mailto:vnavudu@wm.edu) or Krishna Swaminathan at [ksswaminathan@wm.edu.](mailto:ksswaminathan@wm.edu)
+
     buttons:
       - icon_only: false
         label: WhatsApp
