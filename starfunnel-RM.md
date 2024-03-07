@@ -134,7 +134,7 @@ As we journey towards v1.0, we want to integrate the best sales tools on the mar
 
 By [caffeinating](https://www.buymeacoffee.com/unfolding.io) your developer, you're not just getting the best out of them; you're also ensuring a cheerful and energetic work environment.😊
 
-[![buymeacoffee](https://starfunnel.unfolding.io/screenshots/bymeacoffee.webp)](https://www.buymeacoffee.com/unfolding.io)
+[![buymeacoffee](https://starfunnel.unfolding.io/screenshots/screenshot_1.jpg)](https://www.buymeacoffee.com/unfolding.io)
 
 
 
