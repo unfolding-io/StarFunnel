@@ -2,6 +2,7 @@
 import Block from "@components/block/Block.astro";
 import BaseLayout from "./BaseLayout.astro";
 import HeroFunnel from "@components/hero/HeroFunnel.astro";
+import MLHBadge from "@components/MLHBadge.astro";
 
 const props = Astro.props;
 const { title, description, blocks, style, thumbnail, og_image } = Astro.props;
@@ -10,6 +11,7 @@ const hasBlocks = blocks && blocks.length > 0;
 ---
 
 <BaseLayout {title} {description} {...style} {thumbnail} {og_image}>
+  <MLHBadge />
   <HeroFunnel {...props}>
     <slot name="hero" />
   </HeroFunnel>
