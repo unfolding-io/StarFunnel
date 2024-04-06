@@ -10,6 +10,7 @@ import PricingTable from "./PricingTable.astro";
 import Faqs from "./Faqs.astro";
 
 const { slot, ...props } = Astro.props;
+props.component === "ImageGallery" && console.log(props);
 ---
 
 {

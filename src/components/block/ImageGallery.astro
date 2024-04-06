@@ -3,7 +3,7 @@ import { Picture } from "astro-imagetools/components";
 import { Icon } from "astro-icon/components";
 import { t } from "@util/translate";
 import { getImageUrl, getImageTransitionName } from "@util/helpers";
-const { title, images, style, aspect } = Astro.props;
+const { title, images, style, aspect, fit } = Astro.props;
 const getAnimation = (image) => {
   return style.animate
     ? getImageTransitionName(image)
@@ -46,10 +46,12 @@ if (style.container === "sm")
             <Picture
               src={image}
               aspect={aspect}
+              fit={fit}
               position="entropy"
               alt={image}
               sizes={sizes}
               layout="fullWidth"
+              background="transparent"
             />
           </div>
           <div class="absolute inset-0 z-10 opacity-0 transition-all duration-1000 hover:opacity-100">
