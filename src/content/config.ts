@@ -41,6 +41,9 @@ const blocks = z
 				if (!!val && val > 0) return val
 				return 0
 			}).optional(),
+			
+
+			fit: z.string().optional(),
 
 			 
 			link: z.string().optional(),

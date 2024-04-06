@@ -241,6 +241,14 @@ export const blocks = {
           required: false,
         },
         {
+          name: "fit",
+          label: t("fit"),
+          widget: "select",
+          options: ["cover" , "contain" , "fill" , "inside" , "outside"],
+          default: "cover",
+          required: true,
+        },
+        {
           name: "images",
           label: t("images"),
           widget: "image",
