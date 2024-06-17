@@ -187,7 +187,7 @@ const rules = {
   message: [
     {
       type: "string",
-      min: 10,
+      min: 2,
       required: true,
     },
   ],
@@ -241,13 +241,14 @@ const submit = () => {
   loading.value = true;
 
   if (!!props.contact.provider) {
-    fetch(`/api/contact-${props.contact.provider}`, {
+    fetch(`/api/contact/${props.contact.provider}`, {
       method: "POST",
       body: JSON.stringify(mailData.value),
       headers: { "Content-Type": "application/json" },
     })
       .then((r) => r.json())
       .then((data) => {
+        console.log("data", data);
         if (data.status === "ok") {
           toast.success(t("contact_thanks"));
           form.email = "";

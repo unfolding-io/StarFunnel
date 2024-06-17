@@ -1,13 +1,15 @@
-let { POSTMARK_SERVER_TOKEN, FROM_EMAIL_ADDRESS, TO_EMAIL_ADDRESS } =
-  Deno.env.toObject();
+import type { APIRoute } from "astro";
+export const prerender = false;
 
-export default async (request, context) => {
-  if (!POSTMARK_SERVER_TOKEN || !FROM_EMAIL_ADDRESS || !TO_EMAIL_ADDRESS)
+let { POSTMARK_SERVER_TOKEN, FROM_EMAIL_ADDRESS, TO_EMAIL_ADDRESS } = import.meta.env;
+
+export const POST: APIRoute = async ({ site, params, request }) => {
+  if (!POSTMARK_SERVER_TOKEN || !FROM_EMAIL_ADDRESS|| !TO_EMAIL_ADDRESS)
     return Response.json({
       error: "Missing Postmark configuration, please check your .env file.",
     });
 
-  const { email, name, message, topicEmail } = await request.json();
+   const { email, name, message, topicEmail } = await request.json();
 
   if (!email || email === "") return Response.json({ error: "Missing email" });
 
@@ -20,12 +22,15 @@ export default async (request, context) => {
     "X-Postmark-Server-Token": POSTMARK_SERVER_TOKEN,
   };
 
-  const emailObject = {
+const emailObject = {
     From: FROM_EMAIL_ADDRESS,
     To: topicEmail ? topicEmail : TO_EMAIL_ADDRESS,
     Subject: `Contact Form: ${name} ${email}`,
     TextBody: message,
+    "MessageStream": "broadcast",
   };
+
+   
   try {
     const resp = await fetch(`https://api.postmarkapp.com/email`, {
       method: "POST",
@@ -35,17 +40,24 @@ export default async (request, context) => {
 
     let response = await resp.json();
 
+    console.log(response);
+
+    console.log(resp);
+
     return Response.json({
-      statusCode: 200,
+      statusCode: resp?.ok ? 200 : response.ErrorCode,
       status: resp?.ok ? "ok" : "error",
-      body: "Your message was sent successfully! We'll be in touch.",
+      body: resp?.ok? "Your message was sent successfully! We'll be in touch.": response.Message,
     });
-  } catch (e) {
-    console.log("ERROR[]", e);
-    return Response.json({
-      statusCode: 400,
-      status: "error",
-      error: "Postmark error",
-    });
+  } catch (error) {
+    console.debug(error);
+    return new Response(
+      JSON.stringify({
+        message: "error",
+      }),
+      {
+        status: 500,
+      },
+    );
   }
 };

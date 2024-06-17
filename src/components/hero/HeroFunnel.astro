@@ -1,5 +1,5 @@
 ---
-import { Picture } from "astro-imagetools/components";
+import Picture from "@components/media/Picture.astro";
 import { marked } from "marked";
 import { Icon } from "astro-icon/components";
 import Button from "@components/navigation/Button.astro";
@@ -31,7 +31,7 @@ const mediaClass = () => {
     <div
       class={`hero-funnel parallax-wrap relative ${
         hero?.style?.surface || "surface-dark"
-      } ${hero?.style?.class || ""} ${hero?.style?.layout || ""}  ${
+      } ${hero?.style?.class || ""} ${hero?.style?.layout || ""} ${
         hero?.style?.media || ""
       }`}
       transition:name={`hero_${slug || Math.random()}`}
@@ -44,12 +44,12 @@ const mediaClass = () => {
       />
       {hero?.style?.pattern && (
         <div
-          class="parallax absolute inset-0 "
+          class="parallax absolute inset-0"
           style={`${hero?.style?.pattern || ""}  `}
         />
       )}
       {hasBgImage && (
-        <div class="media parallax absolute inset-0 ">
+        <div class="media parallax absolute inset-0">
           <Picture
             attributes={{
               picture: {
@@ -60,23 +60,21 @@ const mediaClass = () => {
             src={hero.media.background_image}
             width={1920}
             height={1080}
-            ar={16 / 10}
+            aspect={16 / 10}
             alt={title}
-            breakpoints={[1000, 1280, 1440, 1536, 1920]}
             sizes="100vw"
             loading="eager"
             layout="fill"
-            position="entropy"
             artDirectives={[
               {
                 media: "(max-width: 500px)",
-                ar: 0.6,
+                aspect: 0.6,
                 src: hero.media.background_image,
                 breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
               },
               {
                 media: "(max-width: 1000px)",
-                ar: 1,
+                aspect: 1,
                 src: hero.media.background_image,
                 breakpoints: [500, 601, 768, 820, 962, 1280, 1440, 1536, 1920],
               },
@@ -87,13 +85,13 @@ const mediaClass = () => {
 
       <div class="relative z-10 grid w-full place-items-center">
         <div
-          class={`container-${hero?.style?.container || "xl"} py-14  ${
+          class={`container-${hero?.style?.container || "xl"} py-14 ${
             hero?.style?.layout === "row"
               ? "hero-funnel__row-grid"
               : "hero-funnel__col-grid"
           }`}
         >
-          <div class="mx-auto grid max-w-3xl gap-8 pt-20  md:pb-10 ">
+          <div class="mx-auto grid max-w-3xl gap-8 pt-20 md:pb-10">
             {hero?.title && (
               <h1 class="title" set:html={marked.parse(hero.title)} />
             )}
@@ -105,7 +103,7 @@ const mediaClass = () => {
             )}
 
             {hero.buttons && hero.buttons.length > 0 && (
-              <div class="hero-funnel__buttons mt-2 flex flex-wrap gap-4 ">
+              <div class="hero-funnel__buttons mt-2 flex flex-wrap gap-4">
                 {hero.buttons.map((btn) => (
                   <Button {...btn} />
                 ))}
@@ -114,16 +112,16 @@ const mediaClass = () => {
             <slot />
           </div>
 
-          <div class="grid place-items-center">
+          <div class="grid h-full w-full place-items-center">
             {hasMedia && (
               <VideoDialogBtn
                 client:visible
                 video_id={hero?.media?.video_id}
-                className={`overflow-hidden rounded ${mediaClass()} ${
+                className={`w-full overflow-hidden rounded ${mediaClass()} ${
                   hasEmbed ? "group" : ""
                 } ${
                   hero.style.layout === "column" ? "max-w-lg" : ""
-                } hero-funnel__media  `}
+                } hero-funnel__media`}
               >
                 {hasPreviewVideo && (
                   <VideoInline url={hero.media.video_preview} client:idle delay>
@@ -134,20 +132,13 @@ const mediaClass = () => {
                           : "/src/assets/system/video-placeholder.jpeg"
                       }
                       alt={hero.title}
-                      sizes="50vw"
+                      sizes="(min-width: 1450px) 580px, (min-width: 768px) calc(50vw - 4rem),  calc(100vw - 4rem)"
                       aspect={hero.media?.aspect ? hero.media?.aspect : 1.777}
-                      format={["webp"]}
-                      fit="cover"
-                      layout="constrained"
-                      placeholder="blurred"
-                      fadeInTransition={false}
-                      preload="webp"
-                      position="entropy"
+                      layout="fullWidth"
                       loading="eager"
-                      breakpoints={[420, 725, 960]}
                     />
                     {hasEmbed && (
-                      <div class="absolute inset-0  z-50  grid place-items-center">
+                      <div class="absolute inset-0 z-50 grid place-items-center">
                         <Icon
                           name="play"
                           class="h-20 w-20 text-secondary transition-transform duration-300 group-hover:scale-125"
@@ -160,15 +151,10 @@ const mediaClass = () => {
                   <Picture
                     src={hero.media.thumbnail}
                     alt={hero.title}
-                    sizes="50vw"
+                    sizes="(min-width: 1450px) 580px, (min-width: 768px) calc(50vw - 4rem),  calc(100vw - 4rem)"
                     aspect={hero.media?.aspect ? hero.media?.aspect : 1.777}
-                    format={["webp"]}
-                    fit="cover"
-                    layout="constrained"
-                    placeholder="blurred"
-                    position="entropy"
+                    layout="fullWidth"
                     loading="eager"
-                    breakpoints={[420, 725, 960]}
                   />
                 )}
               </VideoDialogBtn>
@@ -176,8 +162,8 @@ const mediaClass = () => {
           </div>
         </div>
       </div>
-      <div class={`hero-funnel__divider z-0 -mb-px `}>
-        <span class="surface-base  -mb-px h-72 w-full shrink-0 md:-mb-20 md:h-40" />
+      <div class={`hero-funnel__divider z-0 -mb-px`}>
+        <span class="surface-base -mb-px h-72 w-full shrink-0 md:-mb-20 md:h-40" />
         <div class="surface-base h-full w-full" />
       </div>
     </div>

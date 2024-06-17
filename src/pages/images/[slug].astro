@@ -6,7 +6,7 @@ import ImageNav from "@components/navigation/ImageNav.vue";
 import { Icon } from "astro-icon/components";
 import { t } from "@util/translate";
 import { getImageTransitionName } from "@util/helpers";
-import { Picture } from "astro-imagetools/components";
+import Picture from "@components/media/Picture.astro";
 
 export async function getStaticPaths() {
   /* This is a bit hacky, but I want to get routes for all images without using node:fs */
@@ -63,7 +63,6 @@ const title = toHeaderCase(slug);
           src={image}
           alt={title}
           attributes={{ img: { class: "max-h-screen " } }}
-          breakpoints={[1000, 1280, 1440, 1536, 1920]}
           sizes="100vw"
           objectFit="contain"
           loading="eager"

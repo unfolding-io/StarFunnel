@@ -1,6 +1,6 @@
 ---
 import { getEntry } from "astro:content";
-import { Picture } from "astro-imagetools/components";
+import Picture from "@components/media/Picture.astro";
 import { Icon } from "astro-icon/components";
 import { marked } from "marked";
 
@@ -64,22 +64,20 @@ if (newsletter) {
               src={media.thumbnail}
               width={1920}
               height={900}
-              ar={2.25}
+              aspect={2.25}
               alt={"background image"}
               layout="fill"
-              breakpoints={[1000, 1280, 1440, 1536, 1920]}
-              position="attention"
               sizes={"100vw"}
               artDirectives={[
                 {
                   media: "(max-width: 500px)",
-                  ar: 0.7,
+                  aspect: 0.7,
                   src: media.thumbnail,
                   breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
                 },
                 {
                   media: "(max-width: 1000px)",
-                  ar: 1,
+                  aspect: 1,
                   src: media.thumbnail,
                   breakpoints: [
                     500, 601, 768, 820, 962, 1280, 1440, 1536, 1920,
@@ -117,7 +115,7 @@ if (newsletter) {
         <div
           slot="buttons"
           style="--animation-delay: 0.6s"
-          class={`fade-up relative z-10 inline-flex flex-wrap gap-4  py-8`}
+          class={`fade-up relative z-10 inline-flex flex-wrap gap-4 py-8`}
         >
           {buttons.map((btn) => (
             <Button {...btn} />
@@ -135,22 +133,20 @@ if (newsletter) {
             src={media.thumbnail}
             width={1920}
             height={900}
-            ar={2.25}
+            aspect={2.25}
             alt={"background image"}
             layout="fill"
-            breakpoints={[1000, 1280, 1440, 1536, 1920]}
-            position="attention"
             sizes={"100vw"}
             artDirectives={[
               {
                 media: "(max-width: 500px)",
-                ar: 0.7,
+                aspect: 0.7,
                 src: media.thumbnail,
                 breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
               },
               {
                 media: "(max-width: 1000px)",
-                ar: 1,
+                aspect: 1,
                 src: media.thumbnail,
                 breakpoints: [500, 601, 768, 820, 962, 1280, 1440, 1536, 1920],
               },

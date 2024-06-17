@@ -1,6 +1,4 @@
 import { defineConfig } from "astro/config";
-import { astroImageTools } from "astro-imagetools";
-
 import mdx from "@astrojs/mdx";
 import m2dx from "astro-m2dx";
 import sitemap from "@astrojs/sitemap";
@@ -13,7 +11,7 @@ const oembedTransformer = fauxOembedTransformer.default;
 import vue from "@astrojs/vue";
 /** @type {import('astro-m2dx').Options} */
 import icon from "astro-icon";
-
+import netlify from "@astrojs/netlify";
 const m2dxOptions = {
   exportComponents: true,
   unwrapImages: true,
@@ -23,6 +21,8 @@ const m2dxOptions = {
 // https://astro.build/config
 export default defineConfig({
   site: "https://starfunnel.unfolding.io",
+  output: "hybrid",
+  adapter: netlify(),
   integrations: [
     icon(),
     mdx({}),
@@ -31,7 +31,6 @@ export default defineConfig({
     vue({
       appEntrypoint: "/src/pages/_app",
     }),
-    astroImageTools,
   ],
   markdown: {
     extendDefaultPlugins: true,
@@ -61,6 +60,10 @@ export default defineConfig({
       },
       assetsInlineLimit: 10096,
     },
+    ssr: {
+      // Workaround until they support native ESM
+      noExternal: ["vue3-popper"],
+    },
   },
   build: {
     inlineStylesheets: "always",
@@ -69,4 +72,10 @@ export default defineConfig({
     defaultStrategy: "viewport",
   },
   scopedStyleStrategy: "attribute",
+  image: {
+    cache: true,
+    service: {
+      entrypoint: "./src/image-service/image-service",
+    },
+  },
 });

@@ -1,8 +1,16 @@
-const { SLACK_CHANNEL_ID, SLACK_TOKEN } = Deno.env.toObject();
+import type { APIRoute } from "astro";
+export const prerender = false;
 
-const formUrl = "https://slack.com/api/chat.postMessage";
+const { SLACK_CHANNEL_ID, SLACK_TOKEN } = import.meta.env;
 
-export default async (request, context) => {
+export const POST: APIRoute = async ({ site, params, request }) => {
+  if (!SLACK_CHANNEL_ID || !SLACK_TOKEN)
+    return Response.json({
+      error: "Missing Slack configuration, please check your .env file.",
+    });
+
+  const formUrl = "https://slack.com/api/chat.postMessage";
+
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Content-Type": "application/json",
@@ -11,21 +19,19 @@ export default async (request, context) => {
     Authorization: `Bearer ${SLACK_TOKEN}`,
   };
 
-  const { email, name, message, topicEmail, topicChannel } =
+  const { email, message, topicChannel } =
     await request.json();
 
   if (!email || email === "") return Response.json({ error: "Missing email" });
   if (!message || message === "")
     return Response.json({ error: "Missing message" });
-  if (!formUrl || formUrl === "")
-    return Response.json({ error: "Missing formUrl" });
+
 
   const data = {
     channel: topicChannel ? topicChannel : SLACK_CHANNEL_ID,
     text: `Contact Form submission \n \n ${message}`,
     icon_emoji: ":ok_hand:",
   };
-
   try {
     const resp = await fetch(formUrl, {
       method: "POST",
@@ -39,10 +45,15 @@ export default async (request, context) => {
       statusCode: 200,
       status: !!response?.ok ? "ok" : "error",
     });
-  } catch (e) {
-    console.log("ERROR[]", e);
-    return Response.json({
-      error: " error",
-    });
+  } catch (error) {
+    console.debug(error);
+    return new Response(
+      JSON.stringify({
+        message: "error",
+      }),
+      {
+        status: 500,
+      },
+    );
   }
 };

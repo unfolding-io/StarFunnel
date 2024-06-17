@@ -3,7 +3,7 @@ import { getEntry } from "astro:content";
 import { t } from "@util/translate";
 import { Icon } from "astro-icon/components";
 import { marked } from "marked";
-import { Picture } from "astro-imagetools/components";
+import Picture from "@components/media/Picture.astro";
 import BaseHead from "@components/BaseHead.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
@@ -136,19 +136,14 @@ const newsletters = () => {
         slot="image"
         src={contact.data.form.thumbnail}
         alt={`contact`}
-        sizes="50vw"
+        sizes="(max-width: 768px) calc(100vw - 4rem), (min-width: 1024px) 440px, calc(40vw - 4rem)"
         aspect={1}
-        format={["webp"]}
-        fit="cover"
         layout="fill"
-        placeholder="blurred"
-        position="attention"
         loading="lazy"
-        breakpoints={[420, 725, 960]}
         artDirectives={[
           {
             media: "(max-width: 768px)",
-            ar: 21 / 9,
+            aspect: 21 / 9,
             src: contact.data.form.thumbnail,
             layout: "constrained",
             breakpoints: [500, 601, 768, 820, 962, 1280, 1440, 1536, 1920],
@@ -168,17 +163,12 @@ const newsletters = () => {
             alt={item.title}
             sizes="50vw"
             aspect={4 / 5}
-            format={["webp"]}
-            fit="cover"
             layout="fill"
-            placeholder="blurred"
-            position="attention"
             loading="lazy"
-            breakpoints={[420, 725, 960]}
             artDirectives={[
               {
                 media: "(max-width: 768px)",
-                ar: 21 / 9,
+                aspect: 21 / 9,
                 layout: "constrained",
                 src: item.thumbnail,
                 breakpoints: [500, 601, 768, 820, 962],
@@ -197,19 +187,14 @@ const newsletters = () => {
         slot="image"
         src={contact.data.auth.thumbnail}
         alt={`Auth`}
-        sizes="50vw"
+        sizes="(max-width: 768px) calc(100vw - 4rem), (min-width: 1024px) 440px, calc(40vw - 4rem)"
         aspect={4 / 5}
-        format={["webp"]}
-        fit="cover"
         layout="fill"
-        placeholder="blurred"
-        position="attention"
         loading="lazy"
-        breakpoints={[420, 725, 960]}
         artDirectives={[
           {
             media: "(max-width: 768px)",
-            ar: 21 / 9,
+            aspect: 21 / 9,
             layout: "constrained",
             src: contact.data.auth.thumbnail,
             breakpoints: [500, 601, 768, 820, 962],

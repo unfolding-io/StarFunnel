@@ -1,7 +1,7 @@
 ---
 import FormattedDate from "../FormattedDate.astro";
 import ItemFilter from "@components/navigation/ItemFilter.astro";
-import { Picture } from "astro-imagetools/components";
+import Picture from "@components/media/Picture.astro";
 
 const { content, base_url, sizes, animate } = Astro.props;
 
@@ -28,9 +28,8 @@ const animation = `hero_${animate ? content.slug : Math.random()}`;
               },
             }}
             sizes={sizes ? sizes : "100vw"}
-            position="attention"
             src={content.data.thumbnail}
-            ar={16 / 9}
+            aspect={16 / 9}
             alt={content.data.title}
             layout="fullWidth"
           />

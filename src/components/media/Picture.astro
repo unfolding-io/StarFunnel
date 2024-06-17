@@ -1,0 +1,121 @@
+---
+import { getImage } from "astro:assets";
+let {
+  src,
+  aspect,
+  attributes,
+  sizes = "100vw",
+  alt = "my image",
+  width = 640,
+  height = 640,
+  loading = "lazy",
+  widths = [
+    240, 320, 400, 450, 480, 580, 640, 750, 828, 940, 990,1080, 1200, 1450, 1920,
+  ],
+  artDirectives = [],
+  layout = "fill",
+} = Astro.props;
+
+const allImages = import.meta.glob("/src/assets/*.{jpeg,jpg,png,gif}");
+const imgObj = (await allImages[src]()).default;
+if (aspect) height = Math.round(width / aspect);
+const image = await getImage({
+  src: imgObj,
+  width: width,
+  height: height,
+  aspect: aspect,
+  format: imgObj.format,
+});
+
+const formats = ["webp"];
+
+const sources = await Promise.all(
+  formats.map(async (format) => {
+    const image = await getImage({
+      src: imgObj,
+      format,
+      width,
+      height,
+      widths,
+      sizes,
+      aspect,
+    });
+    return {
+      format,
+      srcset: image.srcSet.attribute,
+    };
+  }),
+);
+
+function imgClass() {
+  if (layout === "fill") {
+    return "w-full h-full object-cover";
+  }
+  if (layout === "fullWidth") {
+    return "w-full h-auto object-cover";
+  }
+  if (layout === "contain") {
+    return "w-full h-full object-contain";
+  }
+}
+
+const artdirection = await Promise.all(
+  artDirectives.map(async (directive) => {
+    return await Promise.all(
+      formats.map(async (format) => {
+        const image = await getImage({
+          src: imgObj,
+          format,
+          width,
+          height,
+          aspect: directive.aspect,
+          widths: directive.breakpoints,
+        });
+
+        return {
+          format,
+          srcset: image.srcSet.attribute,
+          media: directive.media,
+        };
+      }),
+    );
+  }),
+);
+---
+
+<picture {...attributes?.picture}>
+  {
+    artdirection.map((directive) => (
+      <>
+        {directive.map((source) => (
+          <source
+            type={`image/${source.format}`}
+            srcset={source.srcset}
+            sizes={sizes}
+            media={source.media}
+          />
+        ))}
+      </>
+    ))
+  }
+  {
+    sources.map((source) => (
+      <source
+        type={`image/${source.format}`}
+        srcset={source.srcset}
+        sizes={sizes}
+      />
+    ))
+  }
+
+  <img
+    src={image.src}
+    alt={alt}
+    class={imgClass()}
+    {sizes}
+    {width}
+    {height}
+    {loading}
+    {...attributes?.img}
+  />
+</picture>

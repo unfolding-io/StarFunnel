@@ -34,6 +34,8 @@ data = {
 };
 
 const pagerSlug = `${base_url}/${filter_type}/${slugify(filter)}`;
+const sizes =
+  "(max-width: 639px) calc(100vw - 4rem), (min-width: 1024px) 450px,  calc(50vw - 4rem )";
 ---
 
 <PageLayout
@@ -49,7 +51,7 @@ const pagerSlug = `${base_url}/${filter_type}/${slugify(filter)}`;
   {tag}
 >
   <section>
-    <ul class={`grid grid-cols-1 sm:grid-cols-2 gap-20  pb-20 `}>
+    <ul class={`grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 lg:gap-20 pb-20`}>
       {
         page.map((post) => (
           <li>
@@ -57,7 +59,7 @@ const pagerSlug = `${base_url}/${filter_type}/${slugify(filter)}`;
               <ItemCard
                 content={post}
                 {base_url}
-                sizes="100vw"
+                {sizes}
                 animate={true}
               />
             </Intersecting>

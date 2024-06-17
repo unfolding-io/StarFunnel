@@ -204,7 +204,7 @@ const formData = computed(() => {
 const submit = () => {
   if (props.provider === "mailchimp") {
     loading.value = true;
-    fetch("/api/subscribe-mailchimp", {
+    fetch("/api/newsletter/mailchimp", {
       method: "POST",
       body: JSON.stringify(formData.value),
       headers: { "Content-Type": "application/json" },

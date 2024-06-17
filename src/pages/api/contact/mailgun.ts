@@ -1,4 +1,5 @@
-import { encodeBase64 } from "https://deno.land/std@0.212.0/encoding/base64.ts";
+import type { APIRoute } from "astro";
+export const prerender = false;
 
 let {
   MAILGUN_API_KEY,
@@ -6,9 +7,9 @@ let {
   MAILGUN_DOMAIN,
   FROM_EMAIL_ADDRESS,
   TO_EMAIL_ADDRESS,
-} = Deno.env.toObject();
+} = import.meta.env;
 
-export default async (request, context) => {
+export const POST: APIRoute = async ({ site, params, request }) => {
   if (
     !MAILGUN_API_KEY ||
     !FROM_EMAIL_ADDRESS ||
@@ -16,13 +17,12 @@ export default async (request, context) => {
     !MAILGUN_API_URL
   )
     return Response.json({
-      error: "Missing MailGun configuration, please check your .env file.",
+      error: "Missing Mailgun configuration, please check your .env file.",
     });
 
   const { email, name, message, topicEmail } = await request.json();
-
   if (!email || email === "") return Response.json({ error: "Missing email" });
-  const authHeader = "Basic " + encodeBase64(`api:${MAILGUN_API_KEY}`);
+  const authHeader = "Basic " + Buffer.from(`api:${MAILGUN_API_KEY}`).toString('base64');
 
   const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -52,17 +52,20 @@ export default async (request, context) => {
 
     let response = await resp.json();
 
-    return Response.json({
-      statusCode: 200,
+      return Response.json({
+      statusCode: resp?.ok ? 200 : response.ErrorCode,
       status: resp?.ok ? "ok" : "error",
-      body: "Your message was sent successfully! We'll be in touch.",
+      body: resp?.ok? "Your message was sent successfully! We'll be in touch.": response.Message,
     });
-  } catch (e) {
-    console.log("ERROR:", e);
-    return Response.json({
-      statusCode: 400,
-      status: "error",
-      error: "Mailgun  error",
-    });
+  } catch (error) {
+    console.debug(error);
+    return new Response(
+      JSON.stringify({
+        message: "error",
+      }),
+      {
+        status: 500,
+      },
+    );
   }
 };

@@ -1,7 +1,7 @@
 ---
 import { getEntry } from "astro:content";
 import { ViewTransitions } from "astro:transitions";
-import { importImage } from "astro-imagetools/api";
+
 import "../styles/global.css";
 
 const { data } = await getEntry("config", "about");
@@ -15,10 +15,7 @@ interface Props {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const { title, description, thumbnail } = Astro.props;
 
-const socialImage = !!thumbnail
-  ? await importImage(`${thumbnail}?w=1200&h=630&ar=1&position=entropy`)
-  : null;
-
+const socialImage = null;
 const pageTitle = `${title} | ${data.sitename}`;
 ---
 

@@ -1,5 +1,5 @@
 ---
-import { Picture } from "astro-imagetools/components";
+import Picture from "@components/media/Picture.astro";
 const { slot, ...props } = Astro.props;
 import Intersecting from "@components/common/Intersecting.vue";
 import { t } from "@util/translate";
@@ -39,9 +39,6 @@ const isSvg = !isPixelBasedImage(ext);
           {...props}
           alt={imgAlt}
           width={768}
-          breakpoints={[
-            360, 390, 412, 601, 768, 820, 962, 1280, 1440, 1536, 1920,
-          ]}
         />
       </a>
     </Intersecting>
