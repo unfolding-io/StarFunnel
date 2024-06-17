@@ -10,7 +10,7 @@ let about = await getEntry("config", "about");
 let contact = await getEntry("config", "contact");
 let navigation = await getEntry("config", "navigation");
 
-const showNewsletter = !!import.meta.env.NEWSLETTER_PROVIDER;
+const showNewsletter = !!import.meta.env.NEWSLETTER_PROVIDER || "mailchimp";
 ---
 
 <footer class="surface-footer grid grid-cols-1 gap-8 py-8">

@@ -25,7 +25,7 @@ const { lastPage, currentPage, page, filter, filters, filter_type, tag } =
   Astro.props;
 let { data } = await getEntry("config", "blog");
 
-const base_url = import.meta.env.BLOG_SLUG;
+const base_url = import.meta.env.BLOG_SLUG || "news";
 
 const pageData = getCategoryData(data.blog_tags, filter);
 data = {

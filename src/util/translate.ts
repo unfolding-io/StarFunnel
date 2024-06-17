@@ -3,7 +3,7 @@ interface Locale {
     [key: string]: string;
 } 
 import en from '@locales/en.json'; 
-const lang = import.meta.env.WEBSITE_LANGUAGE;
+const lang = import.meta.env.WEBSITE_LANGUAGE || "en";
 export const t = (field: string): string => {
     const translations: Record<string, Locale>  = {
         en: en

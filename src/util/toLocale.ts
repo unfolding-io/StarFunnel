@@ -1,5 +1,5 @@
-let lang = import.meta.env.WEBSITE_LANGUAGE;
-let currency = import.meta.env.CURRENCY;
+let lang = import.meta.env.WEBSITE_LANGUAGE || "en";
+let currency = import.meta.env.CURRENCY || 'USD';
 
 if(!lang && typeof document === 'undefined') {
     throw new Error("WEBSITE_LANGUAGE is not defined, please define it in .env file or rename the env.txt to .env");

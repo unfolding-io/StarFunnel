@@ -54,7 +54,7 @@ export async function getStaticPaths() {
 }
 
 type Props = CollectionEntry<"blog">;
-const base_url = import.meta.env.BLOG_SLUG;
+const base_url = import.meta.env.BLOG_SLUG || "new";
 const post = Astro.props;
 const { Content } = await post.render();
 
