@@ -23,7 +23,7 @@ const m2dxOptions = {
 export default defineConfig({
   site: "https://starfunnel.unfolding.io",
   output: "hybrid",
-  adapter: netlify(), // vercel() or netlify()
+  adapter: vercel(), // vercel() or netlify()
   integrations: [
     icon(),
     mdx({}),
