@@ -12,6 +12,7 @@ import vue from "@astrojs/vue";
 /** @type {import('astro-m2dx').Options} */
 import icon from "astro-icon";
 import netlify from "@astrojs/netlify";
+import vercel from "@astrojs/vercel/serverless";
 const m2dxOptions = {
   exportComponents: true,
   unwrapImages: true,
@@ -22,7 +23,7 @@ const m2dxOptions = {
 export default defineConfig({
   site: "https://starfunnel.unfolding.io",
   output: "hybrid",
-  adapter: netlify(),
+  adapter: vercel(), // vercel() or netlify()
   integrations: [
     icon(),
     mdx({}),

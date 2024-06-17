@@ -14,7 +14,7 @@ thumbnail: /src/assets/webdev.jpeg
 ---
 ## Clone this repo or deploy to netlify
 
-Easily deploy this theme to Netlify with a single click.
+Easily deploy this theme to Netlify or Vercel.
 
 
 
@@ -81,12 +81,14 @@ const config = {
 
 ```
 
-### 3. Add your site to the astro config
+### 3. Add your site to the astro config and set your adapter (vercel or netlify)
 
 ```javascript
 
 export default defineConfig({
 	site: 'https://your-website.com',
+	output: "hybrid",
+  	adapter: vercel(), // vercel() or netlify()
     ....
 
 ```

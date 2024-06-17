@@ -5,7 +5,7 @@
 
 ## Clone this repo or deploy to netlify
 
-Easily deploy this theme to Netlify with a single click.
+Easily deploy this theme to Netlify or Vercel.
 
 ## 1. Setting up the .env file
 
@@ -68,12 +68,16 @@ const config = {
 
 ```
 
-### 3. Add your site to the astro config
+### 3. Add your site to the astro config and set your adapter (vercel or netlify)
+
 
 ```javascript
 
 export default defineConfig({
 	site: 'https://your-website.com',
+	output: "hybrid",
+  	adapter: vercel(), // vercel() or netlify()
+
     ....
 
 ```
@@ -128,7 +132,7 @@ For those seeking priority assistance, we offer premium support services. Feel f
 
 ## 🚕 Roadmap
 
-As we journey towards v1.0, we want to integrate the best sales tools on the market. Next up is ActiveCampaign. but if you have requests, please let us know!
+As we journey towards v1.0, we want to integrate the best sales tools on the market. If you have requests, please let us know!
 
 ## ☕️ Want to Caffeinate your Developer? 
 
