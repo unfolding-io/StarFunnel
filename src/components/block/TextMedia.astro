@@ -28,11 +28,11 @@ if (style.template === "column") {
   const sizesArray = [`(max-width: 767px) calc(100vw - 4rem)`];
 
   sizesArray.push(
-    `(max-width: ${containerSizes[style.container]}) calc((100vw - 6rem) / ${percent} )`
+    `(max-width: ${containerSizes[style.container]}) calc((100vw - 6rem) / ${percent} )`,
   );
 
   sizesArray.push(
-    `(min-width: ${containerSizes[style.container]}) calc(${containerSizes[style.container]} / ${percent} - 2rem)`
+    `(min-width: ${containerSizes[style.container]}) calc(${containerSizes[style.container]} / ${percent} - 2rem)`,
   );
 
   sizesArray.push(`calc(100vw - 2rem)`);
@@ -75,9 +75,6 @@ const hasEmbed = !!media?.video_id?.trim() || false;
       imageName && (
         <>
           {style.template !== "banner" && media.video_id && (
-          
-
-
             <VideoDialogBtn
               client:visible
               video_id={media?.video_id}
@@ -86,7 +83,7 @@ const hasEmbed = !!media?.video_id?.trim() || false;
               } w-full overflow-hidden ${roundedClass} ${mediaClass()}`}
             >
               <div
-                class={`transition-transform duration-1000 ease-in hover:scale-105 hover:duration-[1s] w-full h-full`}
+                class={`h-full w-full transition-transform duration-1000 ease-in hover:scale-105 hover:duration-[1s]`}
               >
                 {hasPreviewVideo && (
                   <VideoInline url={media.video_preview} client:visible>
@@ -120,36 +117,14 @@ const hasEmbed = !!media?.video_id?.trim() || false;
             </VideoDialogBtn>
           )}
 
-
           {style.template !== "banner" && !media.video_id && (
-            <div class={`${
+            <div
+              class={`${
                 !hasEmbed || "group"
-              } w-full overflow-hidden ${roundedClass} ${mediaClass()}`}> 
-
-
-              <div
-                class={`transition-transform duration-1000 ease-in hover:scale-105 hover:duration-[1s]`}
-              >
-                {hasPreviewVideo && (
-                  <VideoInline url={media.video_preview} client:visible>
-                    <Picture
-                      src={media.thumbnail}
-                      alt={media.title}
-                      layout="fullWidth"
-                      aspect={media.aspect}
-                      sizes={sizes}
-                    />
-                    {hasEmbed && (
-                      <div class="absolute inset-0 z-50 grid place-items-center">
-                        <Icon
-                          name="play"
-                          class="h-20 w-20 text-secondary transition-transform duration-300 group-hover:scale-125"
-                        />
-                      </div>
-                    )}
-                  </VideoInline>
-                )}
-                {!hasPreviewVideo && (
+              } w-full overflow-hidden ${roundedClass} ${mediaClass()}`}
+            >
+              {hasPreviewVideo && (
+                <VideoInline url={media.video_preview} client:visible>
                   <Picture
                     src={media.thumbnail}
                     alt={media.title}
@@ -157,14 +132,26 @@ const hasEmbed = !!media?.video_id?.trim() || false;
                     aspect={media.aspect}
                     sizes={sizes}
                   />
-                )}
-              </div>
+                  {hasEmbed && (
+                    <div class="absolute inset-0 z-50 grid place-items-center">
+                      <Icon
+                        name="play"
+                        class="h-20 w-20 text-secondary transition-transform duration-300 group-hover:scale-125"
+                      />
+                    </div>
+                  )}
+                </VideoInline>
+              )}
+              {!hasPreviewVideo && (
+                <Picture
+                  src={media.thumbnail}
+                  alt={media.title}
+                  layout="fullWidth"
+                  aspect={media.aspect}
+                  sizes={sizes}
+                />
+              )}
             </div>
-          
-
-
-           
-             
           )}
 
           {style.template === "banner" && hasPreviewVideo && (
