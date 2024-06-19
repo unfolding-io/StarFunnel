@@ -244,7 +244,8 @@ blocks:
         title: Can I remove the attribution?
         description: >
           If you wish to remove the attribution, you have the option to purchase
-          a [license](https://nebulix.unfolding.io/shop/starfunnel-license/) for $149.95 USD.
+          a [license](https://nebulix.unfolding.io/shop/starfunnel-license/) for
+          $149.95 USD.
       - id: d89f61b4-0e72-40f0-9a08-d424752f4474
         title: Does StarFunnel come with a CMS?
         description: >
@@ -258,6 +259,15 @@ blocks:
           You'll need to implement your authentication system or integrate with
           a third-party authentication service to enable user accounts and
           redirects.
+  - type: recentitems
+    component: RecentItems
+    count: 10
+    post_tag:
+      - Made with StarFunnel
+    title: Made with StarFunnel
+    content: "\n\n\n"
+    style:
+      surface: surface-base
   - type: popup
     component: AnnoyingPopup
     timing:
@@ -307,5 +317,6 @@ blocks:
         icon: /src/icons/shop.svg
         color: surface-primary
     block_class: py-20 text-center
-og_image: /src/assets/og_image_starfunnel.jpg
+  
+og_image: "/src/assets/og_image_starfunnel.jpg"
 ---
