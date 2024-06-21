@@ -27,10 +27,10 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 
 import "plyr/dist/plyr.css";
-import Plyr from "plyr";
+
 import { useStore } from "@nanostores/vue";
 import { showVideo } from "@src/store";
 
@@ -53,6 +53,9 @@ const props = defineProps({
 const container = ref(null);
 const videoPlayer = ref(null);
 const loading = ref(false);
+let Plyr;
+
+onMounted(async () => {});
 const pauseVideo = () => {
   showVideo.set({
     id: $show.value.id,
@@ -61,8 +64,9 @@ const pauseVideo = () => {
   if (videoPlayer.value) videoPlayer.value.pause();
 };
 
-const playVideo = () => {
+const playVideo = async () => {
   /* allowCookie.value = checkCookie(); */
+  if (!Plyr) Plyr = (await import("plyr")).default;
   if (!videoPlayer.value) {
     loading.value = true;
     videoPlayer.value = new Plyr(container.value, {
