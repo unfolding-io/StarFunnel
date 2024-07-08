@@ -1,6 +1,7 @@
 ---
 import { getEntry } from "astro:content";
 import { ViewTransitions } from "astro:transitions";
+import { getImage } from "astro:assets";
 
 import "../styles/global.css";
 
@@ -15,8 +16,27 @@ interface Props {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const { title, description, thumbnail } = Astro.props;
 
-const socialImage = null;
+let socialImage ;
 const pageTitle = `${title} | ${data.sitename}`;
+
+/* SOCIAL IMAGE */
+if(thumbnail) {
+
+  const allImages = import.meta.glob("/src/assets/*.{jpeg,jpg,png,gif}");
+
+  const imgObj = (await allImages[thumbnail]()).default;
+  
+ 
+  socialImage = await getImage({
+    src: imgObj,
+    width: 1200,
+    height: 630,
+    format: "png",
+  });
+
+}
+
+
 ---
 
 <!-- Global Metadata -->
@@ -38,7 +58,7 @@ const pageTitle = `${title} | ${data.sitename}`;
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-{socialImage && <meta property="og:image" content={socialImage} />}
+{socialImage && <meta property="og:image" content={socialImage.src} />}
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />

@@ -247,8 +247,7 @@ const submit = () => {
       headers: { "Content-Type": "application/json" },
     })
       .then((r) => r.json())
-      .then((data) => {
-        console.log("data", data);
+      .then((data) => { 
         if (data.status === "ok") {
           toast.success(t("contact_thanks"));
           form.email = "";

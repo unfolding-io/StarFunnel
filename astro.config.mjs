@@ -6,6 +6,7 @@ import tailwind from "@astrojs/tailwind";
 import rehypeExternalLinks from "rehype-external-links";
 import fauxRemarkEmbedder from "@remark-embedder/core";
 import fauxOembedTransformer from "@remark-embedder/transformer-oembed";
+import { loadEnv } from "vite";
 const remarkEmbedder = fauxRemarkEmbedder.default;
 const oembedTransformer = fauxOembedTransformer.default;
 import vue from "@astrojs/vue";
@@ -13,6 +14,9 @@ import vue from "@astrojs/vue";
 import icon from "astro-icon";
 import netlify from "@astrojs/netlify";
 import vercel from "@astrojs/vercel/serverless";
+
+const env = loadEnv("", process.cwd(), "NETLIFY");
+
 const m2dxOptions = {
   exportComponents: true,
   unwrapImages: true,
@@ -23,7 +27,7 @@ const m2dxOptions = {
 export default defineConfig({
   site: "https://starfunnel.unfolding.io",
   output: "hybrid",
-  adapter: vercel(), // vercel() or netlify()
+  adapter: env.NETLIFY ? netlify(): vercel(), // vercel() or netlify()
   integrations: [
     icon(),
     mdx({}),

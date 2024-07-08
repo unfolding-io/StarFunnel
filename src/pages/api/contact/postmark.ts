@@ -40,9 +40,7 @@ const emailObject = {
 
     let response = await resp.json();
 
-    console.log(response);
-
-    console.log(resp);
+    
 
     return Response.json({
       statusCode: resp?.ok ? 200 : response.ErrorCode,

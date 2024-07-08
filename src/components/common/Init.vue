@@ -14,7 +14,6 @@ onMounted(() => {
   const root = document.documentElement;
   const html = document.getElementsByTagName("html")[0];
   const start = new Date().getTime();
-  console.log("moutned")
 
   /* GET TIME TO LOAD PAGE */
   window.onload = function () {
