@@ -29,6 +29,7 @@
     "@astrojs/vercel": "^7.7.1",
     "@astrojs/vue": "^4.5.0",
     "@fontsource-variable/dm-sans": "^5.0.6",
+    "@fontsource/raleway": "^5.1.0",
     "@nanostores/vue": "^0.10.0",
     "@panzoom/panzoom": "^4.5.1",
     "@remark-embedder/core": "^3.0.3",
