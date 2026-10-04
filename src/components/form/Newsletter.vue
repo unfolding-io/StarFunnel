@@ -1,52 +1,40 @@
 <template>
-  <form @submit.prevent="submit" class="grid gap-4">
-    <div class="pb-8">
-      <h2 class="subtitle balance">{{ data?.title }}</h2>
+  <form @submit.prevent="submit" class="dialog-form grid gap-4">
+    <div class="grid gap-2 pb-2">
+      <h2 class="title-sm balance">{{ data?.title }}</h2>
       <slot name="content" />
     </div>
 
     <div class="input-group">
+      <label for="newsletter-name">{{ t("name") }} *</label>
       <input
+        id="newsletter-name"
         type="text"
         name="name"
-        placeholder=" "
-        class="peer"
         v-model="form.name"
       />
-      <label
-        class="peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
-        >{{ t("name") }} *</label
-      >
     </div>
     <div class="input-group">
+      <label for="newsletter-last-name">{{ t("last_name") }} *</label>
       <input
+        id="newsletter-last-name"
         type="text"
         name="last_name"
-        placeholder=" "
-        class="peer"
         v-model="form.last_name"
       />
-      <label
-        class="peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
-        >{{ t("last_name") }} *</label
-      >
     </div>
 
     <div class="input-group">
+      <label for="newsletter-email">{{ t("email") }} *</label>
       <input
+        id="newsletter-email"
         type="email"
         name="email"
-        placeholder=" "
-        class="peer"
         v-model="form.email"
       />
-      <label
-        class="peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
-        >{{ t("email") }} *</label
-      >
     </div>
 
-    <div class="flex w-full justify-between gap-4">
+    <div class="flex w-full items-center justify-between gap-4">
       <div>
         <div
           class="inline-flex items-center"
@@ -135,31 +123,40 @@
   </form>
 </template>
 
-<script setup>
-import { ref, watch, reactive, computed } from "vue";
+<script setup lang="ts">
+import { ref, reactive, computed, onMounted } from "vue";
 import { t } from "@util/translate";
 import { useStore } from "@nanostores/vue";
 import { showDialog } from "@src/store";
 import { useAsyncValidator } from "@vueuse/integrations/useAsyncValidator";
 
 import Loading from "@components/common/Loading.vue";
-import "vue3-toastify/dist/index.css";
 import { toast } from "vue3-toastify";
+import { actions } from "astro:actions";
+
+onMounted(async () => {
+  if (document.getElementById("toastify-css")) return;
+  const cssUrl = (await import("vue3-toastify/dist/index.css?url")).default;
+  const link = document.createElement("link");
+  link.id = "toastify-css";
+  link.rel = "stylesheet";
+  link.href = cssUrl;
+  document.head.appendChild(link);
+});
 
 const $showDialog = useStore(showDialog);
 
-const props = defineProps({
-  data: {
-    type: Object,
+const props = withDefaults(
+  defineProps<{
+    data?: Record<string, any>;
+    provider?: string;
+  }>(),
+  {
+    provider: "mailchimp",
   },
+);
 
-  provider: {
-    type: String,
-    default: "mailchimp",
-  },
-});
-
-const form = reactive({ email: "", name: "" });
+const form = reactive({ email: "", name: "", last_name: "" });
 
 const rules = {
   email: [
@@ -170,7 +167,7 @@ const rules = {
   ],
 };
 
-const { pass, isFinished, errorFields } = useAsyncValidator(form, rules);
+const { pass, isFinished } = useAsyncValidator(form, rules);
 
 const label = t("subscribe");
 const subscribeNewsletter = ref(false);
@@ -188,95 +185,39 @@ const canSubmit = computed(() => {
   return !loading.value && isFinished.value && pass.value;
 });
 
-const formData = computed(() => {
-  return {
-    email: form.email,
-    first_name: form.name,
-    last_name: form.last_name,
-    type: $showDialog.value.type,
-    tags: props.data.tags,
-    list: props.data.id,
-    include_main_list: subscribeNewsletter.value,
-    status: props.data.status,
-  };
-});
+const submit = async () => {
+  if (props.provider !== "mailchimp" || !canSubmit.value) return;
 
-const submit = () => {
-  if (props.provider === "mailchimp") {
-    loading.value = true;
-    fetch("/api/newsletter/mailchimp", {
-      method: "POST",
-      body: JSON.stringify(formData.value),
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.status === "pending") {
-          toast.success(
-            props.data?.thanks ? props.data.thanks : t("newsletter_thanks"),
-          );
-          hide();
-          form.email = "";
-          form.name = "";
-          form.last_name = "";
-        } else if (data.status === "subscribed") {
-          toast.info(
-            props.data?.thanks
-              ? props.data.thanks
-              : t("newsletter_already_subscribed"),
-          );
-          hide();
-          form.email = "";
-          form.name = "";
-          form.last_name = "";
-        } else {
-          toast.error(t("newsletter_error"));
-        }
-      })
-      .catch((e) => {
-        toast.error(t("newsletter_error"));
-      })
-      .finally(() => {
-        loading.value = false;
-      });
+  loading.value = true;
+  try {
+    const { data, error } = await actions.subscribe({
+      email: form.email,
+      provider: "mailchimp",
+    });
+
+    if (error) {
+      toast.error(error.message || t("newsletter_error"));
+      return;
+    }
+
+    const thanks = props.data?.thanks ? props.data.thanks : t("newsletter_thanks");
+    if (data?.status === "exists") {
+      toast.info(
+        props.data?.thanks
+          ? props.data.thanks
+          : t("newsletter_already_subscribed"),
+      );
+    } else {
+      toast.success(thanks);
+    }
+    hide();
+    form.email = "";
+    form.name = "";
+    form.last_name = "";
+  } catch (e) {
+    toast.error(t("newsletter_error"));
+  } finally {
+    loading.value = false;
   }
 };
 </script>
-
-<style lang="postcss">
-.dialog-grid {
-  @apply grid grid-cols-1;
-  @screen md {
-    grid-template-columns: 4fr 5fr;
-  }
-}
-
-.dialog {
-  &__newsletter-inner {
-    max-height: calc(100vh - 2rem);
-    overflow-x: hidden;
-    overflow-y: auto;
-    @screen md {
-      height: min(100vh - 2rem, 30rem);
-    }
-  }
-
-  &__newsletter-content {
-    overflow-x: hidden;
-    overflow-y: auto;
-    @screen md {
-      height: min(100vh - 2rem, 30rem);
-    }
-  }
-}
-
-.input-group {
-  @apply relative isolate;
-  input {
-    @apply block w-full appearance-none border-0 border-b border-gray-500 bg-transparent px-0 py-2.5 text-sm text-current focus:border-primary focus:outline-none focus:ring-0;
-  }
-  label {
-    @apply pointer-events-none absolute left-0 top-3 z-20 origin-[0] -translate-y-6 scale-75 transform text-sm text-current duration-300;
-  }
-}
-</style>

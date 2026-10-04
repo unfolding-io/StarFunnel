@@ -1,15 +1,16 @@
 ---
 import FormattedDate from "../FormattedDate.astro";
 import ItemFilter from "@components/navigation/ItemFilter.astro";
-import Picture from "@components/media/Picture.astro";
+import SmartPicture from "@components/media/SmartPicture.astro";
+import { sizesGridCard, widthsGridCard } from "@util/images";
 
 const { content, base_url, sizes, animate } = Astro.props;
 
-const animation = `hero_${animate ? content.slug : Math.random()}`;
+const animation = `hero_${animate ? content.id : Math.random()}`;
 ---
 
 <a
-  href={`/${base_url}/${content.slug}/`}
+  href={`/${base_url}/${content.id}/`}
   class="blog-card fade-up group relative z-10 block overflow-hidden"
   transition:name={`${animation}`}
 >
@@ -21,17 +22,13 @@ const animation = `hero_${animate ? content.slug : Math.random()}`;
     >
       {
         content.data.thumbnail && (
-          <Picture
-            attributes={{
-              picture: {
-                class: "fade-in",
-              },
-            }}
-            sizes={sizes ? sizes : "100vw"}
+          <SmartPicture
+            sizes={sizes ? sizes : sizesGridCard("md")}
+            widths={widthsGridCard("md")}
             src={content.data.thumbnail}
             aspect={16 / 9}
             alt={content.data.title}
-            layout="fullWidth"
+            class="fade-in h-auto w-full object-cover"
           />
         )
       }
@@ -72,6 +69,8 @@ const animation = `hero_${animate ? content.slug : Math.random()}`;
 </a>
 
 <style>
+  @reference "../../styles/global.css";
+
   .blog-card {
     container-type: inline-size;
 

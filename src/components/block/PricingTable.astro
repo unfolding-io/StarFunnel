@@ -2,6 +2,33 @@
 import { slugify } from "@util/helpers";
 import { Icon } from "astro-icon/components";
 import Button from "@components/navigation/Button.astro";
+import { surfaceClass } from "@util/surfaces";
+
+type ButtonItem = {
+  href: string;
+  label: string;
+  className?: string;
+  color?: string;
+  icon?: string;
+  icon_only?: boolean;
+};
+
+type PriceFeature = {
+  label?: string;
+  value?: string;
+  icon?: string;
+  icon_class?: string;
+};
+
+type PriceItem = {
+  title?: string;
+  intro?: string;
+  price: string;
+  price_suffix?: string;
+  surface?: string;
+  buttons?: ButtonItem[];
+  features?: PriceFeature[];
+};
 
 const { title, prices, style } = Astro.props;
 const id = title ? slugify(title) : "pricing";
@@ -15,13 +42,13 @@ const id = title ? slugify(title) : "pricing";
   {
     prices && prices.length > 0 && (
       <div class="flex flex-wrap gap-8">
-        {prices.map((price) => (
+        {prices.map((price: PriceItem) => (
           <div class="surface-price flex min-w-[290px] flex-1 grow  overflow-hidden rounded shadow-2xl @container">
             <div class="price-grid grid w-full  @xl:flex">
               <div
-                class={`relative h-fit @xl:h-full @xl:max-w-xs  ${price.surface}`}
+                class={`relative h-fit @xl:h-full @xl:max-w-xs  ${surfaceClass(price.surface)}`}
               >
-                <div class=" flex-shrink-0  px-8 pb-14 pt-8 ">
+                <div class="shrink-0 px-8 pb-14 pt-8">
                   <div class="flex-wrap items-end gap-2">
                     <span class="title font-medium tracking-tight">
                       {price.price}
@@ -35,7 +62,7 @@ const id = title ? slugify(title) : "pricing";
                   </div>
                 </div>
 
-                <div class="r-0 absolute -bottom-px flex w-full shrink-0  @md:scale-110">
+                <div class="absolute -bottom-px flex w-full shrink-0 @md:scale-110">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     xml:space="preserve"
@@ -53,7 +80,7 @@ const id = title ? slugify(title) : "pricing";
               </div>
 
               <ul class="@xl:column-3 flex-1 p-8 @lg:columns-2 @lg:gap-8 @lg:pb-20">
-                {price.features.map((feature) => (
+                {price.features?.map((feature: PriceFeature) => (
                   <li class="flex items-start gap-2 py-1">
                     {feature.icon && (
                       <Icon
@@ -73,7 +100,7 @@ const id = title ? slugify(title) : "pricing";
               <div class="bottom-0 right-0 flex w-full justify-end p-8 @md:absolute @md:pr-8">
                 <div class="mt-auto">
                   {price?.buttons &&
-                    price.buttons.map((btn) => <Button {...btn} />)}
+                    price.buttons.map((btn: ButtonItem) => <Button {...btn} />)}
                 </div>
               </div>
             </div>
@@ -90,17 +117,20 @@ const id = title ? slugify(title) : "pricing";
   }
 
   .surface-price {
-    @apply bg-white text-dark dark:bg-black dark:text-light;
-    .shape-fill {
-      @apply fill-white dark:fill-black;
-    }
+    background-color: #fff;
+    color: var(--palette-dark, #191c26);
   }
-  .features {
-    &__item {
-      min-width: min(100vw - var(--spacing), 16rem);
-      @screen sm {
-        max-width: 22rem;
-      }
-    }
+
+  .dark .surface-price {
+    background-color: #000;
+    color: #fff;
+  }
+
+  .surface-price .shape-fill {
+    fill: #fff;
+  }
+
+  .dark .surface-price .shape-fill {
+    fill: #000;
   }
 </style>

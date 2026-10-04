@@ -3,7 +3,7 @@
   <Transition name="fade">
     <div
       v-if="!!$show.show && $show.type === props.link"
-      class="bg-dark-blur popup pointer-events-auto fixed inset-0 grid w-full cursor-pointer place-items-center"
+      class="bg-dark-blur z-1000 popup pointer-events-auto fixed inset-0 grid w-full cursor-pointer place-items-center"
       @click="hide()"
     >
       <div
@@ -79,12 +79,15 @@
 </template>
 
 <script setup>
-import { onMounted, watch, computed } from "vue";
+import { onMounted, onUnmounted, watch, computed } from "vue";
 import { t } from "@util/translate";
 import { useStore } from "@nanostores/vue";
-import { showPopup } from "@src/store";
+import {
+  showPopup,
+  canAutoShowPopup,
+  markPopupSeen,
+} from "@src/store";
 import { useInterval, useClipboard } from "@vueuse/core";
-import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 import "vue3-toastify/dist/index.css";
 import { toast } from "vue3-toastify";
 import Newsletter from "@components/form/Newsletter.vue";
@@ -116,6 +119,8 @@ const { counter, pause, resume, reset } = useInterval(100, { controls: true });
 /* PAUSE THE TIMER */
 pause();
 
+let delayTimer = 0;
+
 const progress = computed(() => {
   const total =
     ((props.data.duration - counter.value / 10) / props.data.duration) * 100;
@@ -142,34 +147,41 @@ const hide = () => {
   });
 };
 
+const autoShow = () => {
+  if (!canAutoShowPopup(props.link)) return;
+  markPopupSeen(props.link);
+  showPopup.set({
+    type: props.link,
+    show: true,
+  });
+  resume();
+};
+
 onMounted(() => {
   if (props.data.delay === 0) {
-    showPopup.set({
-      type: props.link,
-      show: true,
-    });
-    resume();
+    autoShow();
+    return;
   }
 
   if (props.data.delay > 0) {
-    setTimeout(() => {
-      showPopup.set({
-        type: props.link,
-        show: true,
-      });
-      resume();
-    }, props.data.delay * 1000);
+    delayTimer = window.setTimeout(autoShow, props.data.delay * 1000);
   }
+});
+
+onUnmounted(() => {
+  if (delayTimer) clearTimeout(delayTimer);
 });
 
 watch(
   $show,
   (val) => {
     if (val.show && val.type === props.link) {
+      // Manual opens (e.g. #popup links) also count as seen for 24h auto-suppress.
+      markPopupSeen(props.link);
       reset();
-      disableBodyScroll(document.body);
+      document.body.style.overflow = "hidden";
     } else if (!val.show && val.type === props.link) {
-      enableBodyScroll(document.body);
+      document.body.style.overflow = "";
     }
   },
   { immediate: false },
@@ -188,19 +200,25 @@ watch(
 </script>
 
 <style lang="postcss">
+@reference "../../styles/global.css";
+
+.z-1000 {
+  z-index: 1000;
+}
+
 .popup {
   &__content {
     max-height: calc(100vh - 2rem);
     overflow-x: hidden;
     overflow-y: auto;
-    @screen md {
+    @media (width >= 768px) {
       max-height: min(100vh - 2rem, 35rem);
     }
   }
 }
 .popup_wrap {
   @apply relative;
-  z-index: 100;
+  z-index: 1000;
   height: 0 !important;
   padding: 0 !important;
   margin: 0 !important;

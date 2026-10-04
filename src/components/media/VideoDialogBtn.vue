@@ -2,7 +2,7 @@
   <button
     aria-label="show video"
     @click="openVideo()"
-    :class="`${className} ${!!video_id ? '' : 'pointer-events-none '}`"
+    :class="`relative block ${className} ${!!video_id ? '' : 'pointer-events-none '}`"
   >
     <slot />
   </button>

@@ -1,163 +1,124 @@
-# StarFunnel | Astro + Static CMS
+# StarFunnel | Astro 7 + Sveltia CMS
 
 [![License: CC BY-ND 4.0](https://img.shields.io/badge/License-CC_BY--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nd/4.0/)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
 
+Fast sales-funnel theme built on **Astro 7**, **Tailwind CSS v4**, **content collections**, and **Sveltia CMS**.
 
-## Clone this repo or deploy to netlify
+## Features
 
-Easily deploy this theme to Netlify or Vercel.
+- Funnel landing pages with video hero, pricing, FAQs, and lead capture
+- Typed Content Layer collections (`src/content.config.ts`)
+- Optimized images via `astro:assets` `Picture` with layout-aware `sizes` / `widths`
+- PhotoSwipe lightbox for image enlargement (no `/images` routes)
+- Sveltia CMS admin at `/admin`
+- Contact + newsletter via [Astro Actions](https://docs.astro.build/en/guides/actions/) (Mailgun, Postmark, Slack, Mailchimp)
 
-## 1. Setting up the .env file
+See [`CHANGELOG.md`](CHANGELOG.md) for release notes.
 
-rename the `env.txt` to `.env` and fill in your details
+## Requirements
 
-    BLOG_SLUG=news 
-    WEBSITE_LANGUAGE=en
-    CURRENCY=USD 
-    NODE_VERSION=18 
-    NEWSLETTER_PROVIDER=mailchimp
+- Node.js **22.12+** (22.19+ recommended)
+- npm 10+
 
-    MAILCHIMP_API_KEY=XXX
-    MAILCHIMP_SERVER_PREFIX=us21	
-    MAILCHIMP_LIST_ID=XXX
-
-    SLACK_CHANNEL_ID=XXX
-    SLACK_TOKEN=XXX
-
-    FROM_EMAIL_ADDRESS=hello@youremail.com
-    TO_EMAIL_ADDRESS=hello@youremail.com 
-
-    MAILGUN_API_KEY=XXX
-    MAILGUN_DOMAIN=your-domain.com
-    MAILGUN_API_URL=https://api.eu.mailgun.net
-
-    POSTMARK_SERVER_TOKEN=XXX
-
-Also add this to your netlify deploy settings.
-
-### 2. Configure your Static CMS Backend
-
-Navigate to `src/pages/admin.astro` and provide your Git repository details. You can find a list of all supported Git backends at:
-<https://www.staticcms.org/docs/backends-overview>
-
-**_Gitlab Example:_**
-
-```javascript
-
-const config = {
-	locale: lang,
-	site_url: url,
-	logo_url: 'https://starfunnel.unfolding.io/logo.svg',
-	local_backend: true,
-	backend: {
-		name: 'gitlab',
-		repo: '/<your-gitlab-repo>',
-		auth_type: 'pkce', // Required for pkce
-		app_id: 'xxxx', // Application ID from your GitLab settings
-		commit_messages: {
-			create: 'Create {{collection}} "{{slug}}"',
-			update: 'Update {{collection}} "{{slug}}"',
-			delete: 'Delete {{collection}} "{{slug}}"',
-			uploadMedia: 'Upload "{{path}}"',
-			deleteMedia: 'Delete "{{path}}"'
-		}
-	},
-	search: 'true',
-    ....
-}
-
-```
-
-### 3. Add your site to the astro config and set your adapter (vercel or netlify)
-
-
-```javascript
-
-export default defineConfig({
-	site: 'https://your-website.com',
-	output: "hybrid",
-  	adapter: vercel(), // vercel() or netlify()
-
-    ....
-
-```
-
-### 4. Install dependencies
+## Getting started
 
 ```bash
+cp env.txt .env
 npm install
-```
-
-### 🛠️ 5. Start Development server
-
-```bash
 npm run dev
 ```
 
-If you wish to engage the local backend:
+Demo env shortcut:
 
 ```bash
-npm run cms-proxy-server
+npm run dev:demo
 ```
 
-Now you can open Static CMS on http&#x3A;//localhost:4321/admin/
+## Environment
 
-## 🛸 Commands
+See [`env.txt`](env.txt). Key vars:
 
-All commands are run from the root of the project, from a terminal:
+| Variable | Purpose |
+| --- | --- |
+| `BLOG_SLUG` | Blog URL segment (default `news`) |
+| `WEBSITE_LANGUAGE` | Locale for UI strings |
+| `CURRENCY` / `UNITS` | Display preferences |
+| Newsletter / mail / Slack | Used by Astro Actions (see below) |
 
-| Command                    | Action                                           |
-| -------------------------- | ------------------------------------------------ |
-| `npm install`              | Installs dependencies                            |
-| `npm run dev`              | Starts local dev server at `localhost:4321`      |
-| `npm run cms-proxy-server` | Starts Staticcms proxy server for local-backend  |
-| `npm run build`            | Build your production site to `./dist/`          |
-| `npm run preview`          | Preview your build locally, before deploying     |
-| `npm run astro ...`        | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help`  | Get help using the Astro CL                      |
+## CMS (Sveltia)
 
-## 👀 Want to learn more about Astro?
+Open `/admin` in the browser. Collection definitions live in [`src/cms/`](src/cms/). Media is stored under `src/assets`.
 
-Check out [Astro documentation](https://docs.astro.build) or jump into Astro's [Discord server](https://astro.build/chat).
+On **localhost**, Sveltia offers “Work with local repository” (File System Access). Choose this repo root (the folder that contains `.git`). For production, sign in with GitHub; backend settings are in [`src/pages/admin.astro`](src/pages/admin.astro).
 
-## 📚 Tech Stack
+## Forms (Astro Actions)
 
-Astro, MDX, Vue, TailwindCSS
+Contact and newsletter run as Astro Actions under [`src/actions/`](src/actions/) with shared providers in [`src/lib/forms/`](src/lib/forms/).
 
-## 🛟 Support
+| Action | Used by | Providers |
+| --- | --- | --- |
+| `actions.contact` | Contact dialog | `mailgun`, `postmark`, `slack` |
+| `actions.subscribe` | Footer / dialog newsletter | `mailchimp` |
 
-If you encounter any issues or bugs, we encourage you to open an issue in the repository. To help us quickly address the problem, please provide detailed information about the bug and steps to reproduce it.
+Pages stay statically prerendered; the adapter only serves the action endpoints. Set the matching secrets in `.env` (local) and in your host’s environment UI (production).
 
-For those seeking priority assistance, we offer premium support services. Feel free to reach out to us by email at [hello@unfolding.io.](mailto:hello@unfolding.io.) We're here to help!
+## Scripts
 
-## 🚕 Roadmap
+| Script | Description |
+| --- | --- |
+| `npm run dev` | Dev server |
+| `npm run check` | Type-check with `astro check` |
+| `npm run build` | Production build |
+| `npm run preview` | Preview `dist/` |
 
-As we journey towards v1.0, we want to integrate the best sales tools on the market. If you have requests, please let us know!
+## Deploy
 
-## ☕️ Want to Caffeinate your Developer? 
+StarFunnel is mostly static HTML. An [Astro adapter](https://docs.astro.build/en/guides/on-demand-rendering/) is required so Actions can run on the server. The repo ships with **`@astrojs/netlify`**.
 
-By [caffeinating](https://www.buymeacoffee.com/unfolding.io) your developer, you're not just getting the best out of them; you're also ensuring a cheerful and energetic work environment.😊
+Official deploy guides: [Cloudflare](https://docs.astro.build/en/guides/deploy/cloudflare/) · [Netlify](https://docs.astro.build/en/guides/deploy/netlify/) · [Vercel](https://docs.astro.build/en/guides/deploy/vercel/)
 
-[![buymeacoffee](https://starfunnel.unfolding.io/screenshots/bymeacoffee.webp)](https://www.buymeacoffee.com/unfolding.io)
+### Netlify (default)
 
+Already configured (`adapter: netlify()` in [`astro.config.mjs`](astro.config.mjs), [`netlify.toml`](netlify.toml)).
 
+1. Connect the Git repo in the Netlify UI (or use the Netlify CLI).
+2. Build command: `npm run build` · publish directory: `dist` (set by `netlify.toml`).
+3. Add the same secrets from `env.txt` under **Site configuration → Environment variables**.
+4. Deploy.
 
+### Cloudflare Workers
 
+1. Swap the adapter:
 
-## 📸 Screenshots
+   ```bash
+   npx astro add cloudflare
+   ```
 
-![StarFunnel](https://starfunnel.unfolding.io/screenshots/screenshot_1.jpg)
-![StarFunnel](https://starfunnel.unfolding.io/screenshots/screenshot_2.jpg)
-![StarFunnel](https://starfunnel.unfolding.io/screenshots/screenshot_3.jpg)
-![StarFunnel](https://starfunnel.unfolding.io/screenshots/screenshot_4.jpg)
-![StarFunnel](https://starfunnel.unfolding.io/screenshots/screenshot_5.jpg)
-![StarFunnel](https://starfunnel.unfolding.io/screenshots/screenshot_6.jpg)
-![StarFunnel](https://starfunnel.unfolding.io/screenshots/screenshot_7.jpg)
-![StarFunnel](https://starfunnel.unfolding.io/screenshots/screenshot_8.jpg)
-![StarFunnel](https://starfunnel.unfolding.io/screenshots/screenshot_9.jpg) 
+2. Set secrets / vars in the Cloudflare dashboard for Mailchimp / Mailgun / Postmark / Slack as needed.
+3. Local preview / deploy:
 
+   ```bash
+   npx astro build && npx wrangler dev
+   npx astro build && npx wrangler deploy
+   ```
 
+### Vercel
 
+1. Swap the adapter:
 
+   ```bash
+   npx astro add vercel
+   ```
 
+2. Import the project in Vercel. Framework preset: Astro.
+3. Add environment variables from `env.txt`.
+4. Deploy.
 
+### Switching hosts later
+
+Only one adapter should be active. After `npx astro add <platform>`, remove the unused adapter package if it remains in `package.json`, and keep host-specific config aligned with the platform you actually use.
+
+## License
+
+CC BY-ND 4.0 — see [`LICENSE.md`](LICENSE.md). Attribution in the footer must remain visible unless you purchase a [Buy me a coffee](https://buymeacoffee.com/unfolding.io) license — see [pricing](https://starfunnel.unfolding.io/pricing).

@@ -5,7 +5,6 @@ import { useStore } from "@nanostores/vue";
 import { showDialog } from "@src/store";
 import { useAsyncValidator } from "@vueuse/integrations/useAsyncValidator";
 import Loading from "@components/common/Loading.vue";
-import "vue3-toastify/dist/index.css";
 import { toast } from "vue3-toastify";
 
 const $showDialog = useStore(showDialog);
@@ -52,40 +51,12 @@ const canSubmit = computed(() => {
   return !loading.value && isFinished.value && pass.value;
 });
 
-const formData = computed(() => {
-  return {
-    email: form.email,
-    password: form.password,
-    type: $showDialog.value.type,
-  };
-});
-
 const submit = () => {
   loading.value = true;
-
-  fetch("/api/auth", {
-    method: "POST",
-    body: JSON.stringify(formData.value),
-    headers: { "Content-Type": "application/json" },
-  })
-    .then((r) => r.json())
-    .then((data) => {
-      if (data.status === "ok") {
-        // ADD YOUR REDIRECT HERE
-        form.email = "";
-        form.name = "";
-        hide();
-      } else {
-        toast.error(t(`${$showDialog.value.type}_error`));
-      }
-    })
-    .catch((e) => {
-      console.log("error", e);
-      toast.error(t(`${$showDialog.value.type}_error`));
-    })
-    .finally(() => {
-      loading.value = false;
-    });
+  toast.info(
+    "Authentication is not configured in this demo. Connect your auth provider to enable sign-in.",
+  );
+  loading.value = false;
 };
 
 watch(
@@ -100,50 +71,53 @@ watch(
   },
   { immediate: false },
 );
-onMounted(() => {
+onMounted(async () => {
   showForm.value = true;
+  if (document.getElementById("toastify-css")) return;
+  const cssUrl = (await import("vue3-toastify/dist/index.css?url")).default;
+  const link = document.createElement("link");
+  link.id = "toastify-css";
+  link.rel = "stylesheet";
+  link.href = cssUrl;
+  document.head.appendChild(link);
 });
 </script>
 
 <template>
   <div>
-    <form @submit.prevent="submit" class="grid gap-4" v-if="showForm">
-      <div class="pb-4">
-        <h2 class="subtitle">
+    <form
+      @submit.prevent="submit"
+      class="dialog-form grid gap-4"
+      v-if="showForm"
+    >
+      <div class="grid gap-2 pb-2">
+        <h2 class="title-sm">
           {{ t(`${$showDialog.auth}`) }}
         </h2>
       </div>
 
       <div class="input-group">
+        <label for="auth-email">{{ t("email") }} *</label>
         <input
+          id="auth-email"
           type="email"
           name="email"
           autocomplete="username"
-          placeholder=" "
-          class="peer"
           v-model="form.email"
         />
-        <label
-          class="peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
-          >{{ t("email") }} *</label
-        >
       </div>
 
       <div class="input-group" v-if="$showDialog.auth !== 'recover_password'">
+        <label for="auth-password">{{ t("password") }} *</label>
         <input
+          id="auth-password"
           type="password"
           name="password"
           :autocomplete="
             $showDialog.auth === 'sign_in' ? 'current-password' : 'new-password'
           "
-          placeholder=" "
-          class="peer"
           v-model="form.password"
         />
-        <label
-          class="peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
-          >{{ t("password") }} *</label
-        >
       </div>
 
       <div class="flex w-full justify-between gap-4">
@@ -350,14 +324,3 @@ onMounted(() => {
   </div>
 </template>
 
-<style lang="postcss" scoped>
-.input-group {
-  @apply relative isolate;
-  input {
-    @apply block w-full appearance-none border-0 border-b border-gray-500 bg-transparent px-0 py-2.5 text-sm text-current focus:border-primary focus:outline-none focus:ring-0;
-  }
-  label {
-    @apply pointer-events-none absolute left-0 top-3 z-20 origin-[0] -translate-y-6 scale-75 transform text-sm text-current duration-300;
-  }
-}
-</style>

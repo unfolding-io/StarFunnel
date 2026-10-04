@@ -1,23 +1,34 @@
 ---
 import { getEntry } from "astro:content";
-import Picture from "@components/media/Picture.astro";
+import SmartPicture from "@components/media/SmartPicture.astro";
+import { sizesBanner, widthsViewport } from "@util/images";
 import { Icon } from "astro-icon/components";
 import { marked } from "marked";
 
 import Popup from "@components/dialog/Popup.vue";
 import Button from "@components/navigation/Button.astro";
+import { surfaceClass } from "@util/surfaces";
+
+type ButtonItem = {
+  href: string;
+  label: string;
+  className?: string;
+  color?: string;
+  icon?: string;
+  icon_only?: boolean;
+};
 
 const { content, link, code, media, buttons, style, timing, newsletter } =
   Astro.props;
-const { slot, ...props } = Astro.props;
-let newsletterItem;
+const popupSurface = surfaceClass(style?.surface || "dark");
+let newsletterItem: Record<string, unknown> | undefined;
 const renderedContent = marked.parse(content);
 
 if (newsletter) {
   const contact = await getEntry("config", "contact");
 
-  newsletterItem = contact.data.newsletter.list
-    .filter((list) => list.link === newsletter)
+  newsletterItem = contact?.data?.newsletter?.list
+    ?.filter((list) => list.link === newsletter)
     .pop();
 }
 ---
@@ -26,12 +37,12 @@ if (newsletter) {
   timing.on_load && (
     <>
       <Popup
-        client:idle
+        client:interaction
         data={timing}
         {link}
         {code}
         newsletter={newsletterItem}
-        className={`${style?.surface || "surface-dark"} `}
+        className={`${popupSurface} `}
       >
         <Icon name="close" class="w-6" slot="close" />
         <div class={`relative z-10 p-8`} slot="content">
@@ -48,7 +59,7 @@ if (newsletter) {
             style="--animation-delay: 0.6s"
             class={`fade-up relative z-10 inline-flex flex-wrap gap-4 py-8`}
           >
-            {buttons.map((btn) => (
+            {buttons.map((btn: ButtonItem) => (
               <Button {...btn} />
             ))}
           </div>
@@ -60,30 +71,13 @@ if (newsletter) {
           slot="image"
         >
           {media.thumbnail && (
-            <Picture
+            <SmartPicture
               src={media.thumbnail}
-              width={1920}
-              height={900}
               aspect={2.25}
               alt={"background image"}
-              layout="fill"
-              sizes={"100vw"}
-              artDirectives={[
-                {
-                  media: "(max-width: 500px)",
-                  aspect: 0.7,
-                  src: media.thumbnail,
-                  breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
-                },
-                {
-                  media: "(max-width: 1000px)",
-                  aspect: 1,
-                  src: media.thumbnail,
-                  breakpoints: [
-                    500, 601, 768, 820, 962, 1280, 1440, 1536, 1920,
-                  ],
-                },
-              ]}
+              sizes={sizesBanner()}
+              widths={widthsViewport(1920)}
+              class="h-full w-full object-cover"
             />
           )}
         </div>
@@ -100,7 +94,7 @@ if (newsletter) {
       {link}
       {code}
       newsletter={newsletterItem}
-      className={`${style.surface || "surface-dark"} `}
+      className={`${popupSurface} `}
     >
       <Icon name="close" class="w-6" slot="close" />
       <div class={`relative z-10 p-8`} slot="content">
@@ -117,7 +111,7 @@ if (newsletter) {
           style="--animation-delay: 0.6s"
           class={`fade-up relative z-10 inline-flex flex-wrap gap-4 py-8`}
         >
-          {buttons.map((btn) => (
+          {buttons.map((btn: ButtonItem) => (
             <Button {...btn} />
           ))}
         </div>
@@ -129,28 +123,13 @@ if (newsletter) {
         slot="image"
       >
         {media.thumbnail && (
-          <Picture
+          <SmartPicture
             src={media.thumbnail}
-            width={1920}
-            height={900}
             aspect={2.25}
             alt={"background image"}
-            layout="fill"
-            sizes={"100vw"}
-            artDirectives={[
-              {
-                media: "(max-width: 500px)",
-                aspect: 0.7,
-                src: media.thumbnail,
-                breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
-              },
-              {
-                media: "(max-width: 1000px)",
-                aspect: 1,
-                src: media.thumbnail,
-                breakpoints: [500, 601, 768, 820, 962, 1280, 1440, 1536, 1920],
-              },
-            ]}
+            sizes={sizesBanner()}
+            widths={widthsViewport(1920)}
+            class="h-full w-full object-cover"
           />
         )}
       </div>

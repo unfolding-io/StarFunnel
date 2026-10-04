@@ -1,9 +1,9 @@
 ---
 import { getEntry } from "astro:content";
 import { t } from "@util/translate";
-import { Icon } from "astro-icon/components";
 import { marked } from "marked";
-import Picture from "@components/media/Picture.astro";
+import SmartPicture from "@components/media/SmartPicture.astro";
+import { sizesContactDialog, widthsForDisplay } from "@util/images";
 import BaseHead from "@components/BaseHead.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
@@ -12,7 +12,7 @@ import Dialog from "@components/dialog/Dialog.vue";
 import Newsletter from "@components/form/Newsletter.vue";
 import Auth from "@components/form/Auth.vue";
 import Init from "@components/common/Init.vue";
-import "@fontsource-variable/dm-sans";
+import { buildSurfaceStyles } from "@util/surfaces";
 
 const lang = import.meta.env.WEBSITE_LANGUAGE || "en";
 const currency = import.meta.env.CURRENCY || "USD";
@@ -21,15 +21,33 @@ const { title, description, page_class, thumbnail, og_image, nav_color } =
 const navigation = await getEntry("config", "navigation");
 const about = await getEntry("config", "about");
 const contact = await getEntry("config", "contact");
+const styleConfig = await getEntry("config", "style");
+const surfaceCss = buildSurfaceStyles(styleConfig?.data?.surface ?? []);
 
-const newsletters = () => {
-  const data = JSON.parse(JSON.stringify(contact.data.newsletter));
-  let items;
+type NewsletterItem = {
+  title?: string;
+  intro?: string;
+  link?: string;
+  status?: string;
+  thanks?: string;
+  thumbnail?: string;
+  list?: unknown;
+  tags?: string[];
+  id?: string;
+  include_main_list?: boolean;
+};
+
+const newsletters = (): NewsletterItem[] => {
+  if (!contact?.data?.newsletter) return [];
+  const data = JSON.parse(
+    JSON.stringify(contact.data.newsletter),
+  ) as NewsletterItem;
+  let items: NewsletterItem[] = [];
   if (
     contact?.data?.newsletter?.list &&
     contact.data.newsletter.list.length > 0
   ) {
-    items = contact.data.newsletter.list;
+    items = contact.data.newsletter.list as NewsletterItem[];
     delete data.list;
   }
 
@@ -38,22 +56,23 @@ const newsletters = () => {
 ---
 
 <!doctype html>
-<html lang={lang} data-currency={currency}>
+<html lang={lang} data-currency={currency} data-is-top="true">
   <head>
     <BaseHead
       title={title}
       description={description}
       thumbnail={!!og_image ? og_image : thumbnail}
     />
+    {surfaceCss && <style is:inline set:html={surfaceCss} />}
   </head>
   <body class={`surface-base ${page_class || ""}`}>
     <Header
       title={title}
       color={nav_color}
-      menu={navigation.data.main_menu}
-      cta={navigation.data.cta_menu}
-      social={contact.data.social}
-      about={about.data}
+      menu={navigation?.data?.main_menu}
+      cta={navigation?.data?.cta_menu}
+      social={contact?.data?.social}
+      about={about?.data}
     />
     <main>
       <slot />
@@ -101,7 +120,7 @@ const newsletters = () => {
       <slot name="footer" />
     </Footer>
 
-    <Init client:idle />
+    <Init client:interaction />
     <svg class="hide hidden">
       <filter id="noiseFilter">
         <feTurbulence
@@ -113,93 +132,86 @@ const newsletters = () => {
     </svg>
 
     <script>
+      import { initScrollFlags } from "@util/scrollFlags";
+      import { bindModalLinks } from "@util/bindModalLinks";
+      import { initStandaloneLightboxes } from "@components/media/initLightbox";
+
       const html = document.getElementsByTagName("html")[0];
 
       const SmoothScroll = () => {
-        html.style["scroll-behavior"] = "auto";
+        html.style.scrollBehavior = "auto";
       };
       SmoothScroll();
       document.addEventListener("astro:beforeload", SmoothScroll);
+
+      // Nav hide/show depends on these flags — init before anything that can throw.
+      initScrollFlags();
+      document.addEventListener("astro:page-load", initScrollFlags);
+
+      // #contact / #newsletter / #popup links — do not wait on Init island hydrate.
+      bindModalLinks();
+
+      initStandaloneLightboxes();
     </script>
-    <Dialog link="contact" type="contact" client:idle>
-      <Contact client:visible contact={contact.data.form} slot="content">
+    <!-- client:load so #hash openers work immediately (interaction only hydrates on island click / 8s) -->
+    <Dialog link="contact" type="contact" client:load>
+      <Contact client:idle contact={contact?.data?.form} slot="content">
         {
           contact?.data?.form?.intro && (
             <div
               set:html={marked.parse(contact.data.form.intro)}
-              slot="texts"
+              slot="content"
             />
           )
         }
       </Contact>
-      <Picture
+      <SmartPicture
         slot="image"
-        src={contact.data.form.thumbnail}
+        src={contact?.data?.form?.thumbnail}
         alt={`contact`}
-        sizes="(max-width: 768px) calc(100vw - 4rem), (min-width: 1024px) 440px, calc(40vw - 4rem)"
-        aspect={1}
-        layout="fill"
-        loading="lazy"
-        artDirectives={[
-          {
-            media: "(max-width: 768px)",
-            aspect: 21 / 9,
-            src: contact.data.form.thumbnail,
-            layout: "constrained",
-            breakpoints: [500, 601, 768, 820, 962, 1280, 1440, 1536, 1920],
-          },
-        ]}
+        sizes={sizesContactDialog()}
+        widths={widthsForDisplay(640)}
+        class="h-full w-full object-cover"
       />
     </Dialog>
 
     {
       newsletters().map((item) => (
-        <Dialog link={item.link} type="newsletter" client:idle>
-          <Newsletter client:visible slot="content" data={item} />
+        <Dialog
+          link={item.link || "newsletter"}
+          type="newsletter"
+          client:load
+        >
+          <Newsletter
+            client:idle
+            slot="content"
+            data={item}
+            provider="mailchimp"
+          />
 
-          <Picture
+          <SmartPicture
             slot="image"
             src={item.thumbnail}
-            alt={item.title}
-            sizes="50vw"
-            aspect={4 / 5}
-            layout="fill"
-            loading="lazy"
-            artDirectives={[
-              {
-                media: "(max-width: 768px)",
-                aspect: 21 / 9,
-                layout: "constrained",
-                src: item.thumbnail,
-                breakpoints: [500, 601, 768, 820, 962],
-              },
-            ]}
+            alt={item.title || "newsletter"}
+            sizes={sizesContactDialog()}
+            widths={widthsForDisplay(640)}
+            class="h-full w-full object-cover"
           />
         </Dialog>
       ))
     }
 
-    <Dialog link="auth" type="auth" client:idle>
+    <Dialog link="auth" type="auth" client:load>
       <div slot="content">
-        <Auth client:visible />
+        <Auth client:idle />
       </div>
-      <Picture
+      <SmartPicture
         slot="image"
-        src={contact.data.auth.thumbnail}
+        src={contact?.data?.auth?.thumbnail}
         alt={`Auth`}
-        sizes="(max-width: 768px) calc(100vw - 4rem), (min-width: 1024px) 440px, calc(40vw - 4rem)"
-        aspect={4 / 5}
-        layout="fill"
-        loading="lazy"
-        artDirectives={[
-          {
-            media: "(max-width: 768px)",
-            aspect: 21 / 9,
-            layout: "constrained",
-            src: contact.data.auth.thumbnail,
-            breakpoints: [500, 601, 768, 820, 962],
-          },
-        ]}
+        sizes={sizesContactDialog()}
+        widths={widthsForDisplay(640)}
+        class="h-full w-full object-cover"
       />
     </Dialog>
   </body>

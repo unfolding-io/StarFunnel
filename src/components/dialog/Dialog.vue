@@ -7,22 +7,26 @@
       class="bg-dark-blur z-1000 dialog pointer-events-auto fixed inset-0 grid w-full cursor-pointer place-items-center"
       @click="hide()"
     >
-      <div @click.stop class="container-md relative" v-if="show">
+      <div
+        @click.stop
+        class="container-md relative cursor-default"
+        v-if="show"
+      >
         <div
-          class="surface-base dialog__inner dialog-grid hide-scrollbar relative overflow-hidden rounded shadow-xl"
+          class="surface-base dialog__inner relative grid grid-cols-1 overflow-hidden rounded-2xl shadow-xl md:grid-cols-[4fr_5fr]"
         >
-          <div class="overflow-hidden">
+          <div class="dialog__media hidden overflow-hidden md:block md:h-full">
             <slot name="image" />
           </div>
           <div
-            class="hide-scrollbar dialog__content relative overflow-hidden p-8 md:p-14"
+            class="hide-scrollbar dialog__content relative overflow-x-hidden overflow-y-auto p-8 md:p-14"
           >
             <slot name="content" />
           </div>
         </div>
         <button
           :aria-label="t('close')"
-          class="btn btn-icon surface-dark btn-absolute -right-1 -top-1 z-10 grid h-10 w-10 place-items-center"
+          class="btn btn-icon surface-dark btn-absolute -right-3 -top-3 z-10 grid h-10 w-10 place-items-center"
           @click="hide()"
         >
           <svg
@@ -46,12 +50,10 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, reactive, computed } from "vue";
+import { watch, computed } from "vue";
 import { t } from "@util/translate";
 import { useStore } from "@nanostores/vue";
 import { showDialog } from "@src/store";
-
-import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 
 const props = defineProps({
   link: {
@@ -85,54 +87,43 @@ const hide = () => {
 watch(
   show,
   (val) => {
-    if (val) {
-      disableBodyScroll(document.body);
-    } else {
-      enableBodyScroll(document.body);
-    }
+    document.body.style.overflow = val ? "hidden" : "";
   },
   { immediate: false },
 );
 </script>
 
 <style lang="postcss" scoped>
+@reference "../../styles/global.css";
+
 .z-1000 {
   z-index: 1000;
 }
 
-.dialog-grid {
-  @apply grid grid-cols-1;
-  @screen md {
-    grid-template-columns: 4fr 5fr;
-  }
+.dialog__inner {
+  max-height: calc(100vh - 2rem);
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-.dialog {
-  &__inner {
+.dialog__media :deep(picture),
+.dialog__media :deep(img) {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+@media (width >= 48rem) {
+  .dialog__inner {
+    height: min(100vh - 2rem, 40rem);
+  }
+
+  .dialog__content {
     max-height: calc(100vh - 2rem);
+    height: min(100vh - 2rem, 40rem);
     overflow-x: hidden;
     overflow-y: auto;
-    @screen md {
-      max-height: min(100vh - 2rem, 35rem);
-    }
-  }
-
-  &__content {
-    overflow-x: hidden;
-    overflow-y: auto;
-    @screen md {
-      max-height: min(100vh - 2rem, 35rem);
-    }
-  }
-}
-
-.input-group {
-  @apply relative isolate;
-  input {
-    @apply block w-full appearance-none border-0 border-b border-gray-500 bg-transparent px-0 py-2.5 text-sm text-current focus:border-primary focus:outline-none focus:ring-0;
-  }
-  label {
-    @apply absolute left-0 top-3 -z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-current duration-300;
   }
 }
 </style>

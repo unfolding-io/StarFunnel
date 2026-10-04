@@ -1,0 +1,246 @@
+/* Block / hero layouts — kept outside global.css so Vite doesn't stale them
+   inside the huge Tailwind module during HMR. */
+
+.hero-funnel__col-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  place-items: center;
+  text-align: center;
+}
+
+.hero-funnel__row-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  text-align: center;
+}
+
+.hero-funnel__buttons {
+  justify-content: center;
+}
+
+@media (width >= 768px) {
+  .hero-funnel__col-grid {
+    grid-template-columns: 5fr 4fr;
+    text-align: left;
+  }
+
+  .hero-funnel__col-grid .hero-funnel__buttons {
+    justify-content: flex-start;
+  }
+}
+
+.hero-funnel__wave {
+  clip-path: url(#heroclip);
+}
+
+.hero-funnel__divider--row {
+  height: calc(100% - 80vh);
+}
+
+.bg-gradient {
+  will-change: transform;
+  backface-visibility: hidden;
+  background-image:
+    radial-gradient(
+      50vmax at -10vw -20vw,
+      var(--palette-secondary) 0%,
+      color-mix(in srgb, var(--palette-secondary) 80%, transparent) 40%,
+      transparent 100%
+    ),
+    radial-gradient(
+      60vmax at 100vw 100vh,
+      var(--palette-primary) 0%,
+      color-mix(in srgb, var(--palette-primary) 80%, transparent) 40%,
+      transparent 100%
+    );
+}
+
+.bg-gradient::after {
+  content: "";
+  position: sticky;
+  inset: 0;
+  z-index: 20;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0.2;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  filter: url(#noiseFilter);
+}
+
+.hero-funnel .title strong,
+.hero-funnel .title bold {
+  color: var(--color-primary);
+}
+
+/* TextMedia column / banner layouts */
+.column-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (width >= 1024px) {
+  .column-grid {
+    gap: 3.5rem;
+  }
+}
+
+.column-grid .img {
+  position: sticky;
+  top: 2rem;
+}
+
+@media (width >= 768px) {
+  .column-grid-25 {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  }
+  .column-grid-25.reverse {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+  }
+
+  .column-grid-33 {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+  .column-grid-33.reverse {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+
+  .column-grid-50 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .column-grid-66 {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+  .column-grid-66.reverse {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+
+  .column-grid-75 {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+  }
+  .column-grid-75.reverse {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  }
+
+  .column-grid.normal .media {
+    grid-column-start: 2;
+    grid-row-start: 1;
+  }
+
+  .column-grid.normal .text-image__content {
+    grid-column-start: 1;
+    grid-row-start: 1;
+  }
+}
+
+.column-grid.container-none .text-image__content {
+  padding-inline: var(--layout-spacing);
+}
+
+@media (width >= 768px) {
+  .column-grid.container-none .text-image__content {
+    padding-inline: var(--container-spacing);
+  }
+}
+
+.column-grid.container-none .img {
+  position: sticky;
+  top: 0;
+}
+
+.text-image-row .media {
+  width: calc(100% + var(--container-spacing));
+  margin-inline: calc(var(--layout-spacing) * -1);
+}
+
+.text-image-row .media .img {
+  position: sticky;
+  top: 2rem;
+}
+
+.text-image-banner .media {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.text-image-banner .text-image__content {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  background-color: color-mix(in srgb, var(--palette-dark, #191c26) 30%, transparent);
+  padding-block: 5rem;
+}
+
+.text-image-banner .text-image__content .richtext {
+  max-width: 42rem;
+  padding: 2rem;
+  text-align: center;
+  color: #fff;
+}
+
+.features__item {
+  min-width: min(100vw - var(--layout-spacing), 16rem);
+}
+
+@media (width >= 640px) {
+  .features__item {
+    max-width: 22rem;
+  }
+}
+
+/* Footer newsletter — underline field on dark surface */
+.newsletter-footer .input-group {
+  position: relative;
+  isolation: isolate;
+  min-width: 12rem;
+}
+.newsletter-footer .input-group input {
+  display: block;
+  width: 100%;
+  appearance: none;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, #fff 70%, transparent);
+  background: transparent;
+  padding: 0.625rem 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #fff;
+}
+.newsletter-footer .input-group input:focus {
+  border-bottom-color: var(--color-primary, #f34c18);
+  outline: none;
+}
+.newsletter-footer .input-group label {
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  top: 0.625rem;
+  z-index: 10;
+  transform: translateY(-1.5rem) scale(0.75);
+  transform-origin: 0 0;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, #fff 80%, transparent);
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
+}
+.newsletter-footer .input-group input:placeholder-shown ~ label {
+  transform: translateY(0) scale(1);
+}
+.newsletter-footer .input-group input:focus ~ label,
+.newsletter-footer .input-group input:not(:placeholder-shown) ~ label {
+  transform: translateY(-1.5rem) scale(0.75);
+  color: var(--color-primary, #f34c18);
+}
+.newsletter-footer .input-group label.is-invalid {
+  color: var(--color-warning, #ca792d);
+}

@@ -16,8 +16,8 @@ const showNewsletter = !!import.meta.env.NEWSLETTER_PROVIDER || "mailchimp";
 <footer class="surface-footer grid grid-cols-1 gap-8 py-8">
   <div class="container-xl flex flex-wrap gap-4">
     {
-      navigation.data.footer_menus &&
-        navigation.data.footer_menus.map((menu) => (
+      navigation?.data?.footer_menus &&
+        navigation?.data?.footer_menus.map((menu) => (
           <div class="min-w-[10rem] space-y-3 sm:max-w-[14rem]">
             <div class="text-sm font-semibold">{menu.label}</div>
             <div class="grid grid-cols-1 gap-0.5 space-y-1 text-xs">
@@ -41,9 +41,9 @@ const showNewsletter = !!import.meta.env.NEWSLETTER_PROVIDER || "mailchimp";
         <div class="flex-col content-end items-end justify-end gap-2 py-0 pt-8 sm:ml-auto sm:flex sm:max-w-md sm:pt-0 sm:text-right">
           <div
             class="richtext dense no-lead balance text-xl leading-none opacity-80"
-            set:html={marked.parse(about.data.newsletter_text)}
+            set:html={marked.parse(about?.data?.newsletter_text ?? "")}
           />
-          <Newsletter client:visible />
+          <Newsletter client:visible type="mailchimp" />
         </div>
       )
     }
@@ -55,7 +55,7 @@ const showNewsletter = !!import.meta.env.NEWSLETTER_PROVIDER || "mailchimp";
       </a>
 
       {
-        about.data.footer_text && (
+        about?.data?.footer_text && (
           <div
             class="balance max-w-sm pr-4 text-sm opacity-70"
             set:html={marked.parse(about.data.footer_text)}
@@ -63,9 +63,9 @@ const showNewsletter = !!import.meta.env.NEWSLETTER_PROVIDER || "mailchimp";
         )
       }
       {
-        contact.data.social && (
+        contact?.data?.social && (
           <div class="-ml-1 flex flex-wrap justify-start gap-2 ">
-            {contact.data.social.map((link) => (
+            {contact?.data?.social.map((link) => (
               <a
                 href={link.href}
                 class="grid h-full place-items-center transition-transform duration-500 hover:scale-110 "
@@ -80,14 +80,14 @@ const showNewsletter = !!import.meta.env.NEWSLETTER_PROVIDER || "mailchimp";
       }
       <div class="mt-auto flex gap-2 pt-4 text-xs opacity-70">
         <span>&copy;{today.getFullYear()}</span>
-        <span> {about.data.sitename}</span>
+        <span> {about?.data?.sitename}</span>
       </div>
     </div>
 
     <!-- 👉👉 CC BY-ND 4.0 ©️unfolding.io  👈👈 -->
     <!-- ⚠️⚠️ DO NOT REMOVE THE ATTRIBUTION ⚠️⚠️ -->
     <!-- Or hide this trough css or js. Keep it visible and readeble-->
-    <!-- if you want to remove the attribution you can purchase a license at https://nebulix.unfolding.io/shop and support further development  🙏🙏 -->
+    <!-- if you want to remove the attribution you can purchase a license at https://buymeacoffee.com/unfolding.io and support further development  🙏🙏 -->
 
     <!-- ✌️✌️ Thanks!✌️✌️ -->
 

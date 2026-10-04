@@ -1,33 +1,38 @@
 ---
 /* BLOG ARCHIVE PAGES */
-
+import type { GetStaticPathsOptions, Page } from "astro";
+import type { CollectionEntry } from "astro:content";
 import { getCollection, getEntry } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
 import Intersecting from "@components/common/Intersecting.vue";
 import ItemCard from "@components/cards/ItemCard.astro";
 import Pager from "@components/navigation/Pager.astro";
 
-
-export async function getStaticPaths({ paginate }) {
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
   const posts = (await getCollection("blog")).sort(
     (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
   );
-  const { data } = await getEntry("config", "blog");
+  const blogEntry = await getEntry("config", "blog");
+  const blogData = blogEntry?.data ?? {};
+  const allFilters = posts.map((post) => post.data.tag).filter((post) => !!post);
+  const filters = [...new Set(allFilters.flat(1))];
 
-  return paginate(posts, { pageSize: data.per_page });
+  return paginate(posts, {
+    pageSize: blogData.per_page ?? 12,
+    props: { blogData, filters },
+  });
 }
+
+type Props = {
+  page: Page<CollectionEntry<"blog">>;
+  blogData: CollectionEntry<"config">["data"];
+  filters: string[];
+  tag?: string;
+};
+
 const base_url = import.meta.env.BLOG_SLUG || "news";
-const { page, tag } = Astro.props;
+const { page, blogData: data, filters, tag } = Astro.props as Props;
 
-const { data } = await getEntry("config", "blog");
-
-const posts = (await getCollection("blog")).sort(
-  (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf(),
-);
-
-/* get the used tags */
-const allFilters = posts.map((post) => post.data.tag).filter((post) => !!post);
-const filters = [...new Set(allFilters.flat(1))];
 const sizes =
   "(max-width: 639px) calc(100vw - 4rem), (min-width: 1024px) 450px,  calc(50vw - 4rem )";
 ---
@@ -41,12 +46,7 @@ const sizes =
         page.data.map((post) => (
           <li>
             <Intersecting client:visible>
-              <ItemCard
-                content={post}
-                {base_url} 
-                {sizes}
-                animate={true}
-              />
+              <ItemCard content={post} {base_url} {sizes} animate={true} />
             </Intersecting>
           </li>
         ))

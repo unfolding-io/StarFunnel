@@ -5,10 +5,13 @@ import ColorSwitch from "@components/common/ColorSwitch.vue";
 
 import { t } from "@util/translate";
 
+type NavLink = { href: string; label: string };
+type SocialLink = { href: string; label: string; icon: string };
+
 const { menu, title, social, color, cta } = Astro.props;
 const currentPath = Astro.url.pathname.split("/")[1];
 
-const isActive = (href) => {
+const isActive = (href: string) => {
   if (currentPath === "" && href == "/") return true;
   if (currentPath !== "" && href.startsWith(`/${currentPath}`)) return true;
 };
@@ -30,7 +33,7 @@ const isActive = (href) => {
     {
       menu && (
         <div class="nav-underline nav-links relative hidden flex-nowrap items-center gap-4 pl-4 tracking-wide transition-colors  md:flex ">
-          {menu.map((link) => (
+          {menu.map((link: NavLink) => (
             <a
               href={link.href}
               class={`${
@@ -51,7 +54,7 @@ const isActive = (href) => {
       {
         cta && cta.length > 0 && (
           <div class="hidden sm:flex">
-            {cta.map((link) => (
+            {cta.map((link: NavLink) => (
               <a
                 href={link.href}
                 class={`btn btn-sm btn-ghost `}
@@ -64,13 +67,13 @@ const isActive = (href) => {
         )
       }
 
-      <ColorSwitch client:load />
+      <ColorSwitch client:interaction />
 
       <div class="md:hidden">
         <NavMobile
           {menu}
           active={currentPath}
-          client:idle
+          client:media-idle="(max-width: 767px)"
           translations={{ menu: t("menu"), close: t("close") }}
         >
           <Icon name="menu-solid" class="h-10 w-10" slot="menu" />
@@ -82,7 +85,7 @@ const isActive = (href) => {
             slot="social"
           >
             {
-              social.map((link, index) => (
+              social.map((link: SocialLink) => (
                 <a
                   href={link.href}
                   class="grid h-full place-items-center transition-all duration-300 hover:text-primary"
@@ -98,19 +101,18 @@ const isActive = (href) => {
       </div>
     </div>
   </nav>
-  <style>
-    .nav {
-      /*  will-change: opacity, transform; */
-
-      &__grid {
-        @screen md {
-          @apply grid;
-          grid-template-columns: 1fr auto 1fr;
-        }
-      }
-    }
-    .btn-ghost {
-      @apply border-2 border-current;
-    }
-  </style>
 </header>
+
+<style>
+  @reference "../styles/global.css";
+
+  .nav__grid {
+    @media (width >= 768px) {
+      @apply grid;
+      grid-template-columns: 1fr auto 1fr;
+    }
+  }
+  .btn-ghost {
+    @apply border-2 border-current;
+  }
+</style>

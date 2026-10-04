@@ -1,179 +1,178 @@
 ---
 title: StarFunnel Pricing Options
-description: Feel free to use this template at no cost. If you need assistance
-  or wish to remove the attribution, explore our available options for
-  additional support and customization.
+description: Feel free to use this template at no cost. If you need assistance or wish to remove the attribution, explore our available options for additional support and customization.
 hero:
+  title: Pricing Options
+  intro: Feel free to use this template at no cost. If you need assistance or wish to remove the attribution, explore our available options for additional support and customization.
   style:
     layout: column
     background: plain
-    container: xl
-    pattern: >-
-      background-image: radial-gradient(rgba(140, 140, 140, 0.4) 2px,
-      transparent 2px), radial-gradient(rgba(140, 140, 140, 0.4) 2px,
-      transparent 2px);
-
-      background-size: 53px 53px;
-
-      background-position: 0 0, 26.5px 26.5px;
     surface: surface-dark
+    pattern: |-
+      background-image: radial-gradient(rgba(140, 140, 140, 0.4) 2px, transparent 2px), radial-gradient(rgba(140, 140, 140, 0.4) 2px, transparent 2px);
+      background-size: 53px 53px;
+      background-position: 0 0, 26.5px 26.5px;
+    class: ''
+    container: xl
   media:
-    aspect: 1.777
-    image_opacity: ""
     thumbnail: /src/assets/get_more_clients.jpeg
-  title: |
-    Pricing Options
-  intro: Feel free to use this template at no cost. If you need assistance or wish
-    to remove the attribution, explore our available options for additional
-    support and customization.
+    aspect: 1.777
+    background_image: ''
+    image_opacity: ''
+    video_preview: ''
+    embed: ''
+    video_id: ''
   buttons:
-    - icon_only: false
-      label: Show pricing
-      href: "#more"
+    - label: Show pricing
+      href: '#more'
+      color: ''
+      icon: ''
+      icon_only: false
+      class_name: ''
 blocks:
   - type: pricing
     component: PricingTable
     title: Pricing
     style:
       container: lg
+      surface: ''
+      block_class: ''
     prices:
       - title: Free
         intro: Host it yourself
         price: $0,-
-        features:
-          - label: Free for commercial use
-            icon: /src/icons/check-o.svg
-            icon_class: text-success
-          - label: Basic support
-            icon: /src/icons/check-o.svg
-            value: GitHub
-            icon_class: text-success
-          - label: Remove attribution
-            icon: /src/icons/close-o.svg
-            icon_class: text-danger
-          - label: Premium Support
-            icon: /src/icons/close-o.svg
-            icon_class: text-danger
+        price_suffix: ''
         surface: surface-secondary
         buttons:
-          - icon_only: false
-            label: Get started
+          - label: Get started
             href: https://github.com/unfolding-io/StarFunnel
             color: surface-secondary
-      - title: No attribution
-        intro: Host it yourself
-        price: $149.95
+            icon: ''
+            icon_only: false
+            class_name: ''
         features:
           - label: Free for commercial use
-            icon: /src/icons/check-o.svg
+            value: ''
             icon_class: text-success
-          - label: Basic support
             icon: /src/icons/check-o.svg
+          - label: Basic support
             value: GitHub
             icon_class: text-success
-          - label: Remove attribution
             icon: /src/icons/check-o.svg
-            icon_class: text-success
-          - label: Premium Support
-            icon: /src/icons/close-o.svg
+          - label: Remove attribution
+            value: ''
             icon_class: text-danger
+            icon: /src/icons/close-o.svg
+          - label: Premium Support
+            value: ''
+            icon_class: text-danger
+            icon: /src/icons/close-o.svg
+      - title: No attribution
+        intro: A coffee or two keeps the theme brewing
+        price: ☕️☕️☕️
+        price_suffix: ''
         surface: surface-primary
         buttons:
-          - icon_only: false
-            label: Buy Your License
-            href: https://nebulix.unfolding.io/shop/starfunnel-license/
+          - label: Buy me a coffee
+            href: https://buymeacoffee.com/unfolding.io
             color: surface-primary
-      - title: Kickstart Your Project
-        intro: We help you install and customize your website
-        price: $999,-
+            icon: ''
+            icon_only: false
+            class_name: ''
         features:
           - label: Free for commercial use
-            icon: /src/icons/check-o.svg
+            value: ''
             icon_class: text-success
-          - label: Basic support
             icon: /src/icons/check-o.svg
+          - label: Basic support
             value: GitHub
             icon_class: text-success
+            icon: /src/icons/check-o.svg
           - label: Remove attribution
-            icon: /src/icons/check-o.svg
+            value: ''
             icon_class: text-success
+            icon: /src/icons/check-o.svg
           - label: Premium Support
-            icon: /src/icons/check-o.svg
-            icon_class: text-success
-            value: 10h
-        price_sufix: from
-        price_suffix: from
-        surface: surface-secondary
-        buttons:
-          - icon_only: false
-            label: More info
-            href: /kickstart-your-project
-            color: surface-secondary
-      - title: Custom Pro
-        intro: Let us know what you need and we will make it happen, custom
-          integrations, custom blocks or custom design. We are here for you!
-        price: On Request
-        features:
-          - label: Free for commercial use
-            icon: /src/icons/check-o.svg
-            icon_class: text-success
-          - label: Basic support
-            icon: /src/icons/check-o.svg
-            icon_class: text-success
-          - label: Remove attribution
-            icon: /src/icons/check-o.svg
-            icon_class: text-success
-          - label: Premium Support
-            icon: /src/icons/check-o.svg
-            icon_class: text-success
-          - label: Custom Design
-            icon: /src/icons/check-o.svg
-            icon_class: text-success
-          - label: Custom Integrations
-            icon: /src/icons/check-o.svg
-            icon_class: text-success
-          - label: Custom Blocks
-            icon: /src/icons/check-o.svg
-            icon_class: text-success
-          - label: Custom Layouts
-            icon: /src/icons/check-o.svg
-            icon_class: text-success
-        price_sufix: p/m
+            value: ''
+            icon_class: text-danger
+            icon: /src/icons/close-o.svg
+      - title: Need help?
+        intro: Setup, custom integrations, design, or development — let’s talk.
+        price: Let's talk
+        price_suffix: ''
         surface: surface-accent
         buttons:
-          - icon_only: false
-            label: Contact
-            href: "#contact"
+          - label: WhatsApp
+            href: https://wa.me/34649712625
             color: surface-accent
+            icon: /src/icons/whatsapp.svg
+            icon_only: false
+            class_name: ''
+        features:
+          - label: Free for commercial use
+            value: ''
+            icon_class: text-success
+            icon: /src/icons/check-o.svg
+          - label: Remove attribution
+            value: ''
+            icon_class: text-success
+            icon: /src/icons/check-o.svg
+          - label: Custom Design
+            value: ''
+            icon_class: text-success
+            icon: /src/icons/check-o.svg
+          - label: Custom Integrations
+            value: ''
+            icon_class: text-success
+            icon: /src/icons/check-o.svg
+          - label: Custom Blocks
+            value: ''
+            icon_class: text-success
+            icon: /src/icons/check-o.svg
+          - label: Custom Layouts
+            value: ''
+            icon_class: text-success
+            icon: /src/icons/check-o.svg
   - type: text_media
     component: TextMedia
     style:
       container: none
+      surface: ''
+      block_class: py-0
       template: column
       reverse: true
-      block_class: py-0
-    media:
-      image_size: "50"
-      title: Image
-      image_opacity: ""
-      embed: youtube
-      aspect: 1.777
-      thumbnail: /src/assets/helpdesk.jpeg
-    content: >-
-      ## Curious about pricing? 
+    content: |-
+      ## Need help?
 
-
-      Or in need of specific features, blocks, or custom integrations? Drop us a message – we're here to assist you!
+      Specific features, blocks, or custom integrations? Drop us a message — we're here to assist you.
     buttons:
-      - icon_only: false
-        label: WhatsApp
+      - label: WhatsApp
         href: https://wa.me/34649712625
+        color: ''
         icon: /src/icons/whatsapp.svg
-      - icon_only: false
-        label: Contact
-        href: "#contact"
+        icon_only: false
+        class_name: ''
+      - label: unfolding.io
+        href: https://unfolding.io
+        color: ''
+        icon: ''
+        icon_only: false
+        class_name: ''
+    media:
+      aspect: 1.777
+      image_size: '50'
+      title: Image
+      thumbnail: /src/assets/helpdesk.jpeg
+      image_opacity: ''
+      video_preview: ''
+      embed: youtube
+      video_id: ''
 style:
   nav_color: light
   container: md
+  page_class: ''
+  content_class: ''
+  block_class: ''
 thumbnail: /src/assets/get_more_clients.jpeg
+og_image: ''
 ---

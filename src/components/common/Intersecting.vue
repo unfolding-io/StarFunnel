@@ -1,6 +1,6 @@
 <template>
   <div
-    v-intersection-observer="[onIntersectionObserver, { rootMargin }]"
+    ref="root"
     :class="`${className || ''} ${isVisible ? 'in-screen' : 'out-of-screen'} ${
       firstVisible ? 'is-active' : 'is-inactive'
     }`"
@@ -9,25 +9,35 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
+import { useIntersectionObserver } from "@vueuse/core";
 
-import { vIntersectionObserver } from "@vueuse/components";
+const props = withDefaults(
+  defineProps<{
+    className?: string;
+    noSsr?: boolean;
+  }>(),
+  {
+    noSsr: false,
+  },
+);
+
 const isVisible = ref(false);
-const rootMargin = "10%";
 const firstVisible = ref(false);
+const root = ref<HTMLElement | null>(null);
 
-function onIntersectionObserver([{ isIntersecting }]) {
-  isVisible.value = isIntersecting;
-  if (isIntersecting) firstVisible.value = true;
-}
+useIntersectionObserver(
+  root,
+  ([{ isIntersecting }]) => {
+    isVisible.value = !!isIntersecting;
+    if (isIntersecting) firstVisible.value = true;
+  },
+  { rootMargin: "10%" },
+);
 
-const props = defineProps({
-  className: String,
-  noSsr: Boolean,
-});
 const show = computed(() => {
-  if (!!props?.noSsr && !firstVisible.value) return false;
+  if (props.noSsr && !firstVisible.value) return false;
   return true;
 });
 </script>

@@ -2,6 +2,12 @@
 import { marked } from "marked";
 import FaqItem from "@components/common/FaqItem.vue";
 
+type FaqItemData = {
+  title?: string;
+  description?: string;
+  id?: string;
+};
+
 const { title, items, style, id } = Astro.props;
 ---
 
@@ -14,18 +20,18 @@ const { title, items, style, id } = Astro.props;
     itemtype="https://schema.org/FAQPage"
   >
     {
-      items.map((item, index) => (
+      items.map((item: FaqItemData, index: number) => (
         <FaqItem
           {index}
           title={item.title}
           id={item.id}
-          client:idle
+          client:interaction
           className={items.length === index + 1 ? "last" : ""}
         >
           <div class="faq-grid ">
             <div
               class="richtext z-20 pb-10"
-              set:html={marked.parse(item.description)}
+              set:html={marked.parse(item.description ?? "")}
             />
           </div>
         </FaqItem>
