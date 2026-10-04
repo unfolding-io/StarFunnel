@@ -1,23 +1,36 @@
 ---
-import Picture from "@components/media/Picture.astro";
+import SmartPicture from "@components/media/SmartPicture.astro";
+import { sizesSplitHero, widthsViewport } from "@util/images";
 import { marked } from "marked";
 import { Icon } from "astro-icon/components";
 import Button from "@components/navigation/Button.astro";
 import VideoInline from "@components/media/VideoInline.vue";
 import VideoDialog from "@components/dialog/VideoDialog.vue";
 import VideoDialogBtn from "@components/media/VideoDialogBtn.vue";
+import { surfaceClass } from "@util/surfaces";
+
+type ButtonItem = {
+  href: string;
+  label: string;
+  className?: string;
+  color?: string;
+  icon?: string;
+  icon_only?: boolean;
+};
 
 const { title, hero } = Astro.props;
 const { slug } = Astro.params;
+const heroSurface = surfaceClass(hero?.style?.surface || "dark");
 const hasImage = !!hero?.media?.thumbnail?.trim() || false;
 const hasBgImage = !!hero?.media?.background_image?.trim() || false;
 const hasPreviewVideo = !!hero?.media?.video_preview?.trim() || false;
 const hasVideo = !!hero?.media?.video_preview?.trim() || false;
 const hasEmbed = !!hero?.media?.video_id?.trim() || false;
 const hasMedia = hasImage || hasVideo || hasPreviewVideo;
+const isRow = hero?.style?.layout === "row";
 const mediaClass = () => {
   if (!hero?.media?.aspect) return "";
-  if (hero.media.aspect == 1) return "aspect-1";
+  if (hero.media.aspect == 1) return "aspect-square";
   if (hero.media.aspect == 1.777) return "aspect-video";
   if (hero.media.aspect == 1.25) return "aspect-5/4";
   if (hero.media.aspect == 0.8) return "aspect-4/5";
@@ -29,11 +42,9 @@ const mediaClass = () => {
 {
   hero && (
     <div
-      class={`hero-funnel parallax-wrap relative ${
-        hero?.style?.surface || "surface-dark"
-      } ${hero?.style?.class || ""} ${hero?.style?.layout || ""} ${
-        hero?.style?.media || ""
-      }`}
+      class={`hero-funnel parallax-wrap relative z-20 grid min-h-[max(80vh,30rem)] place-items-center overflow-hidden ${heroSurface} ${
+        hero?.style?.class || ""
+      } ${hero?.style?.layout || ""} ${hero?.style?.media || ""}`}
       transition:name={`hero_${slug || Math.random()}`}
       id="header"
     >
@@ -50,45 +61,25 @@ const mediaClass = () => {
       )}
       {hasBgImage && (
         <div class="media parallax absolute inset-0">
-          <Picture
-            attributes={{
-              picture: {
-                class: "sm:h-screen ",
-                style: `opacity: ${hero?.media?.image_opacity || 0.7}`,
-              },
-            }}
+          <SmartPicture
             src={hero.media.background_image}
-            width={1920}
-            height={1080}
             aspect={16 / 10}
             alt={title}
             sizes="100vw"
-            loading="eager"
-            layout="fill"
-            artDirectives={[
-              {
-                media: "(max-width: 500px)",
-                aspect: 0.6,
-                src: hero.media.background_image,
-                breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
-              },
-              {
-                media: "(max-width: 1000px)",
-                aspect: 1,
-                src: hero.media.background_image,
-                breakpoints: [500, 601, 768, 820, 962, 1280, 1440, 1536, 1920],
-              },
-            ]}
+            widths={widthsViewport(1920)}
+            priority
+            class="h-full w-full object-cover sm:h-screen"
+            style={`opacity: ${hero?.media?.image_opacity || 0.7}`}
           />
         </div>
       )}
 
       <div class="relative z-10 grid w-full place-items-center">
         <div
-          class={`container-${hero?.style?.container || "xl"} py-14 ${
-            hero?.style?.layout === "row"
-              ? "hero-funnel__row-grid"
-              : "hero-funnel__col-grid"
+          class={`container-${hero?.style?.container || "xl"} grid grid-cols-1 gap-10 py-14 ${
+            isRow
+              ? "hero-funnel__row-grid text-center"
+              : "hero-funnel__col-grid place-items-center text-center md:grid-cols-[5fr_4fr] md:text-left"
           }`}
         >
           <div class="mx-auto grid max-w-3xl gap-8 pt-20 md:pb-10">
@@ -103,8 +94,12 @@ const mediaClass = () => {
             )}
 
             {hero.buttons && hero.buttons.length > 0 && (
-              <div class="hero-funnel__buttons mt-2 flex flex-wrap gap-4">
-                {hero.buttons.map((btn) => (
+              <div
+                class={`hero-funnel__buttons mt-2 flex flex-wrap gap-4 justify-center ${
+                  isRow ? "" : "md:justify-start"
+                }`}
+              >
+                {hero.buttons.map((btn: ButtonItem) => (
                   <Button {...btn} />
                 ))}
               </div>
@@ -112,33 +107,36 @@ const mediaClass = () => {
             <slot />
           </div>
 
-          <div class="grid h-full w-full place-items-center">
+          <div class="relative grid w-full place-items-center self-center">
             {hasMedia && (
               <VideoDialogBtn
-                client:visible
+                client:load
                 video_id={hero?.media?.video_id}
-                className={`w-full overflow-hidden rounded ${mediaClass()} ${
+                className={`hero-funnel__media relative w-full max-h-[max(20rem,70vh)] overflow-hidden rounded aspect-video ${mediaClass()} ${
                   hasEmbed ? "group" : ""
-                } ${
-                  hero.style.layout === "column" ? "max-w-lg" : ""
-                } hero-funnel__media`}
+                } ${!isRow ? "max-w-lg" : ""}`}
               >
                 {hasPreviewVideo && (
-                  <VideoInline url={hero.media.video_preview} client:idle delay>
-                    <Picture
+                  <VideoInline
+                    url={hero.media.video_preview}
+                    client:media-idle="(min-width: 0px)"
+                    delay
+                  >
+                    <SmartPicture
                       src={
                         hero?.media?.thumbnail
                           ? hero.media.thumbnail
                           : "/src/assets/system/video-placeholder.jpeg"
                       }
                       alt={hero.title}
-                      sizes="(min-width: 1450px) 580px, (min-width: 768px) calc(50vw - 4rem),  calc(100vw - 4rem)"
+                      sizes={sizesSplitHero()}
+                      widths={widthsViewport(580)}
                       aspect={hero.media?.aspect ? hero.media?.aspect : 1.777}
-                      layout="fullWidth"
-                      loading="eager"
+                      priority
+                      class="h-full w-full object-cover"
                     />
                     {hasEmbed && (
-                      <div class="absolute inset-0 z-50 grid place-items-center">
+                      <div class="pointer-events-none absolute inset-0 z-50 grid place-items-center">
                         <Icon
                           name="play"
                           class="h-20 w-20 text-secondary transition-transform duration-300 group-hover:scale-125"
@@ -148,13 +146,14 @@ const mediaClass = () => {
                   </VideoInline>
                 )}
                 {!hasPreviewVideo && (
-                  <Picture
+                  <SmartPicture
                     src={hero.media.thumbnail}
                     alt={hero.title}
-                    sizes="(min-width: 1450px) 580px, (min-width: 768px) calc(50vw - 4rem),  calc(100vw - 4rem)"
+                    sizes={sizesSplitHero()}
+                    widths={widthsViewport(580)}
                     aspect={hero.media?.aspect ? hero.media?.aspect : 1.777}
-                    layout="fullWidth"
-                    loading="eager"
+                    priority
+                    class="h-full w-full object-cover"
                   />
                 )}
               </VideoDialogBtn>
@@ -162,8 +161,15 @@ const mediaClass = () => {
           </div>
         </div>
       </div>
-      <div class={`hero-funnel__divider z-0 -mb-px`}>
-        <span class="surface-base -mb-px h-72 w-full shrink-0 md:-mb-20 md:h-40" />
+      <div
+        class={`hero-funnel__divider absolute inset-x-0 bottom-0 z-0 -mb-px flex min-h-20 min-w-[1200px] flex-col overflow-hidden ${
+          isRow ? "hero-funnel__divider--row" : ""
+        }`}
+      >
+        <span
+          class="hero-funnel__wave surface-base -mb-px block h-72 w-full shrink-0 md:-mb-20 md:h-40"
+          style="clip-path: url(#heroclip)"
+        />
         <div class="surface-base h-full w-full" />
       </div>
     </div>
@@ -174,6 +180,7 @@ const mediaClass = () => {
   width="0"
   height="0"
   viewBox="0 0 1200 220.2"
+  aria-hidden="true"
 >
   <defs>
     <clipPath
@@ -190,85 +197,10 @@ const mediaClass = () => {
 {
   hasEmbed && (
     <VideoDialog
-      client:idle
+      client:only="vue"
       video_id={hero?.media?.video_id}
       embed={hero?.media?.embed}
-    >
-      <Icon name="close" class="w-6" />
-    </VideoDialog>
+    />
   )
 }
 
-<style lang="postcss" is:global>
-  
-  .title {
-    strong, bold {
-      @apply text-primary;
-    }
-  }
-
-  .bg-gradient { 
-    will-change: transform;
-    backface-visibility: hidden; 
-    background-image: 
-    
-    radial-gradient(50vMax at -10vw -20vw, theme(colors.secondary) 0%, theme(colors.secondary / 80%)  40%, theme(colors.secondary / 0%)  100%),
-    radial-gradient(60vMax at 100vw 100vh, theme(colors.primary) 0%, theme(colors.primary / 80%)  40%, theme(colors.primary / 0%)  100%);
-    
-     &:after {
-    content: "";
-    @apply sticky w-full h-full block inset-0 z-20 overflow-hidden opacity-20 pointer-events-none;
-    mix-blend-mode: overlay; 
-    filter: url(#noiseFilter);
-  } 
-  }
-
-  .hero-funnel {
-    min-height: max(80vh, 30rem);
-    @apply z-20 overflow-hidden grid place-items-center;
-
-    &__media {
-      max-height: max(20rem, 70vh);
-      
-    }
-    &__buttons {
-      @apply justify-center ;
-    }
-
-    &__col-grid {
-      @apply grid grid-cols-1 gap-10 place-items-center text-center md:text-left;
-
-      @screen md {
-        grid-template-columns: 5fr 4fr;
-      }
-
-      .hero-funnel__buttons {
-        @apply md:justify-start;
-      } 
-    }
-
-     &__row-grid {
-      @apply grid grid-cols-1 text-center gap-10 ;
-    }
-    &__divider {
-      @apply absolute bottom-0 left-0 right-0 overflow-hidden flex flex-col;
-        
-        min-height: 5rem;
-        min-width: 1200px;
-        
-        
-        & > span {
-          @apply block;
-           clip-path: url(#heroclip);
-        }
-
-    }
-
-  &.row {
-    .hero-funnel__divider {
-      height: calc(100% - 80vh);
-    }
-  }
-    
-  }
-</style>

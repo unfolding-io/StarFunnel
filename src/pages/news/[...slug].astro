@@ -2,10 +2,11 @@
 /* BLOG POST PAGES */
 import { getArchiveNav } from "@util/helpers";
 import type { CollectionEntry } from "astro:content";
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import Breadcrumb from "@components/navigation/Breadcrumb.astro";
 import ItemNav from "@components/navigation/ItemNav.astro";
 import PageLayout from "@layouts/PageLayout.astro";
+import { mdxComponents } from "@src/lib/mdxComponents";
 import { t } from "@util/translate";
 
 export async function getStaticPaths() {
@@ -21,14 +22,14 @@ export async function getStaticPaths() {
     prev = archiveNav.prev;
 
     return {
-      params: { slug: post.slug },
+      params: { slug: post.id },
       props: {
         ...post,
         data: {
           ...post.data,
           nav: {
             next: {
-              slug: next?.slug,
+              id: next?.id,
               data: {
                 title: next?.data?.title,
                 thumbnail: next?.data?.thumbnail,
@@ -37,7 +38,7 @@ export async function getStaticPaths() {
               },
             },
             prev: {
-              slug: prev?.slug,
+              id: prev?.id,
               data: {
                 title: prev?.data?.title,
                 thumbnail: prev?.data?.thumbnail,
@@ -54,9 +55,9 @@ export async function getStaticPaths() {
 }
 
 type Props = CollectionEntry<"blog">;
-const base_url = import.meta.env.BLOG_SLUG || "new";
+const base_url = import.meta.env.BLOG_SLUG || "news";
 const post = Astro.props;
-const { Content } = await post.render();
+const { Content } = await render(post);
 
 let searchFilters = [`${t("content")}:${base_url}`];
 if (post?.data?.tag) {
@@ -83,7 +84,7 @@ const filter = post.data?.tag
 >
   <Breadcrumb title={post.data.title} filter={filter} slot="hero" />
   <div class="richtext pb-10">
-    <Content />
+    <Content components={mdxComponents} />
   </div>
   <div class="pb-20" slot="nav">
     <ItemNav nav={post.data.nav} {base_url} />

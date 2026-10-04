@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 import { marked } from "marked";
 import ItemCard from "@components/cards/ItemCard.astro";
 
@@ -8,8 +9,8 @@ import { slugify } from "@util/helpers";
 
 const { title, content, count, post_tag, style } = Astro.props;
 
-let base_url;
-let posts;
+let base_url: string;
+let posts: CollectionEntry<"blog">[];
 
 base_url = import.meta.env.BLOG_SLUG || "news";
 posts = (await getCollection("blog")).sort(
@@ -18,9 +19,11 @@ posts = (await getCollection("blog")).sort(
 
 if (post_tag && post_tag.length > 0)
   posts = posts.filter(
-    (post) =>
+    (post: CollectionEntry<"blog">) =>
       post.data?.tag &&
-      post_tag.some((t) => post.data?.tag && post.data.tag.includes(t))
+      post_tag.some(
+        (t: string) => post.data?.tag && post.data.tag.includes(t),
+      ),
   );
 
 if (count && count > 0) posts = posts.slice(0, count);
@@ -46,7 +49,7 @@ const sizes =
         class={`grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 `}
       >
         {
-          posts.map((post, index) => (
+          posts.map((post: CollectionEntry<"blog">, index: number) => (
             <li style={`--animation-delay: ${(index + 1) * 150}ms`}>
               <ItemCard
                 content={post}
@@ -94,13 +97,15 @@ const sizes =
 </div>
 
 <style lang="postcss">
+@reference "../../styles/global.css";
+
 .recent-blogs ul.bloglist {
-		width: calc(100% + var(--container-spacing));
-		margin-left: calc(var(--spacing) * -1);
-		
-		@screen md {  
-			width: 100%;
-			margin-left: 0;                      
-		}
-	}
+  width: calc(100% + var(--container-spacing, 2rem));
+  margin-left: calc(var(--layout-spacing) * -1);
+
+  @media (width >= 768px) {
+    width: 100%;
+    margin-left: 0;
+  }
+}
 </style>

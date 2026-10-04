@@ -11,7 +11,7 @@
       muted
       loop
       playsinline
-      preload="true"
+      preload="none"
       width="610"
       height="254"
     >
@@ -85,24 +85,48 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style>
+/* Plain CSS — Vue SFC @apply was not reliably emitting position rules in TW4 */
 .video-inline {
-  @apply relative grid h-full w-full grid-cols-1 grid-rows-1 content-center items-center justify-center overflow-hidden rounded text-center;
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+  text-align: center;
+}
 
-  picture,
-  video {
-    @apply absolute -inset-px col-start-1 row-start-1;
-  }
-  @screen md {
-  }
+.video-inline :deep(picture),
+.video-inline :deep(img),
+.video-inline video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-  video {
-    opacity: 1;
-    object-fit: cover;
-    transition: opacity 0.3s ease;
-    &.lazy {
-      opacity: 0;
-    }
-  }
+.video-inline video {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.video-inline video.lazy {
+  opacity: 0;
+}
+
+.video-inline :deep(.hero-funnel__play),
+.video-inline :deep(.absolute.inset-0) {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 </style>

@@ -1,8 +1,10 @@
 ---
-import Picture from "@components/media/Picture.astro";
+import SmartPicture from "@components/media/SmartPicture.astro";
+import { widthsViewport } from "@util/images";
 import ItemFilter from "@components/navigation/ItemFilter.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import { marked } from "marked";
+import { surfaceClass } from "@util/surfaces";
 
 const {
   title,
@@ -18,50 +20,34 @@ const {
 } = Astro.props;
 
 const { slug } = Astro.params;
+const heroSurface = surfaceClass(style?.hero_surface || "dark");
 ---
 
 <div
-  class={`relative rounded mt-28  mb-14 overflow-hidden parallax-wrap container-md ${
-    style.hero_surface || "surface-dark"
-  }`}
+  class={`hero-image relative mt-28 mb-14 overflow-hidden rounded parallax-wrap container-md ${heroSurface}`}
   transition:name={`hero_${slug || Math.random()}`}
   id="header"
 >
   {
     thumbnail && (
-      <div class="media parallax absolute inset-0 w-full">
-        <Picture
-          attributes={{
-            picture: {
-              style: `opacity: ${style.hero_image_opacity || 0.7}`,
-            },
-          }}
+      <div
+        class="media parallax absolute inset-0 w-full"
+        style={`opacity: ${style.hero_image_opacity || 0.7}`}
+      >
+        <SmartPicture
           src={thumbnail}
           aspect={21 / 9}
           alt={title}
           sizes="(min-width: 1024px) 990px, calc(100vw - 2rem)"
-          loading="eager"
-          layout="fill"
-          artDirectives={[
-            {
-              media: "(max-width: 500px)",
-              aspect: 0.6,
-              src: thumbnail,
-              breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
-            },
-            {
-              media: "(max-width: 1000px)",
-              aspect: 1,
-              src: thumbnail,
-              breakpoints: [500, 601, 768, 820, 962, 1280, 1440, 1536, 1920],
-            },
-          ]}
+          widths={widthsViewport(1920)}
+          priority
+          class="h-full w-full object-cover"
         />
       </div>
     )
   }
 
-  <div class="relative z-10 grid place-items-center bg-dark bg-opacity-20">
+  <div class="relative z-10 grid place-items-center bg-dark/20">
     <div class="container-sm pb-20 pt-40">
       <div class="max-w-3xl">
         {
@@ -109,13 +95,9 @@ const { slug } = Astro.params;
   </div>
 </div>
 
-<style lang="postcss" is:global>
-  .media {
-    
-  }
-  .title {
-    strong {
-      @apply text-primary ;
-    }
+<style is:global>
+  .hero-image .title strong,
+  .hero-image .title bold {
+    color: var(--color-primary);
   }
 </style>

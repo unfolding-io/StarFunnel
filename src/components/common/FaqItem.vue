@@ -12,13 +12,13 @@
       itemprop="name"
     >
       <button
-        class="accordion-button group relative flex w-full items-center justify-between rounded-none py-4 text-left transition focus:outline-none"
+        class="accordion-button group relative flex w-full items-center justify-between rounded-none py-3 text-left transition focus:outline-none"
         type="button"
         @click="$showFaq == index ? showFaq.set(null) : showFaq.set(index)"
         :aria-expanded="$showFaq == index"
         :aria-controls="`collapse_${index}`"
       >
-        <span class="grow-1 title-xs py-5 pr-10">
+        <span class="grow-1 title-xs pr-10">
           {{ title }}
         </span>
 
@@ -62,23 +62,16 @@
     <div
       :id="`collapse_${index}`"
       class="accordion-collapse"
+      :class="{ 'is-open': $showFaq == index }"
       :aria-labelledby="`heading_${index}`"
       itemscope
       role="region"
       itemprop="acceptedAnswer"
       itemtype="https://schema.org/Answer"
     >
-      <Transition
-        name="my-transition"
-        @enter="onEnter"
-        @leave="onLeave"
-        @before-leave="beforeLeave"
-        @before-enter="onBeforeEnter"
-      >
-        <div class="accordion-body" v-show="$showFaq == index" itemprop="text">
-          <slot />
-        </div>
-      </Transition>
+      <div class="accordion-body" itemprop="text">
+        <slot />
+      </div>
     </div>
   </div>
 </template>
@@ -95,58 +88,69 @@ const props = defineProps({
 });
 
 const $showFaq = useStore(showFaq);
-
-function onBeforeEnter(el) {
-  el.style.maxHeight = "0";
-}
-
-function onEnter(el, done) {
-  el.style.maxHeight = el.scrollHeight + "px";
-}
-
-function beforeLeave(el) {
-  el.style.maxHeight = el.scrollHeight + "px";
-}
-function onLeave(el) {
-  el.style.maxHeight = "0";
-}
 </script>
 
 <style lang="postcss">
-.accordion {
-  &-header {
-    max-width: 100% !important;
-  }
+@reference "../../styles/global.css";
 
-  &-body {
-    height: auto;
-    transition: max-height 0.5s ease-in-out;
-  }
-  &-button {
-    .icon {
-      @apply transition-transform duration-500;
-    }
-  }
+.accordion-header {
+  max-width: 100% !important;
+}
 
-  &-collapse {
-    overflow: hidden;
-  }
+.accordion-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-  &-item:not(.last) {
-    @apply relative;
+.accordion-collapse.is-open {
+  grid-template-rows: 1fr;
+}
 
-    &:after {
-      content: "";
-      background: currentcolor;
-      height: 2px;
-      @apply absolute bottom-0 left-0 right-10 opacity-20;
-    }
+.accordion-collapse.is-open .accordion-body {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.accordion-body {
+  overflow: hidden;
+  min-height: 0;
+  opacity: 0;
+  transform: translateY(-0.35rem);
+  transition:
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accordion-item:not(.last) {
+  position: relative;
+}
+
+.accordion-item:not(.last)::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 2.5rem;
+  height: 2px;
+  background: currentcolor;
+  opacity: 0.2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion-collapse,
+  .accordion-body {
+    transition: none;
   }
 }
-.faq-grid {
-  @apply grid gap-2;
 
-  @screen md {
+.faq-grid {
+  display: grid;
+  gap: 0.5rem;
+}
+
+@media (width >= 768px) {
+  .faq-grid {
     grid-template-columns: 3fr 1fr;
   }
 }

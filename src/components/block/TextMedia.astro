@@ -1,5 +1,6 @@
 ---
-import Picture from "@components/media/Picture.astro";
+import SmartPicture from "@components/media/SmartPicture.astro";
+import { widthsColumn, widthsViewport } from "@util/images";
 import { Icon } from "astro-icon/components";
 import { marked } from "marked";
 import Button from "@components/navigation/Button.astro";
@@ -7,47 +8,49 @@ import VideoInline from "@components/media/VideoInline.vue";
 import VideoDialog from "@components/dialog/VideoDialog.vue";
 import VideoDialogBtn from "@components/media/VideoDialogBtn.vue";
 
+type ButtonItem = {
+  href: string;
+  label: string;
+  className?: string;
+  color?: string;
+  icon?: string;
+  icon_only?: boolean;
+};
+
 const { media, style, content, buttons } = Astro.props;
 
 const renderedContent = marked.parse(content);
-const containerSizes = {
-  sm: "40rem", //640px
-  md: "55rem", // 880px
-  lg: "65rem", //1040
-  xl: "75rem", // 1200
+const containerSizes: Record<string, string> = {
+  sm: "40rem",
+  md: "55rem",
+  lg: "65rem",
+  xl: "75rem",
   full: "100vw",
   none: "100vw",
 };
+const containerKey = String(style.container ?? "md");
 const roundedClass =
   style.template == "column" && style.container !== "none" ? "rounded" : "";
 
 let sizes = "100vw";
 if (style.template === "column") {
-  // (max-width: 767px) calc(100vw - 4rem), (max-width: 65rem) calc(100vw / 1.52 - 2rem), (mix-width: 65rem) calc(65rem / 1.52 - 2rem), calc(100vw - 2rem)
   const percent = (100 / parseInt(media.image_size)).toFixed(2);
   const sizesArray = [`(max-width: 767px) calc(100vw - 4rem)`];
-
   sizesArray.push(
-    `(max-width: ${containerSizes[style.container]}) calc((100vw - 6rem) / ${percent} )`,
+    `(max-width: ${containerSizes[containerKey]}) calc((100vw - 6rem) / ${percent} )`,
   );
-
   sizesArray.push(
-    `(min-width: ${containerSizes[style.container]}) calc(${containerSizes[style.container]} / ${percent} - 2rem)`,
+    `(min-width: ${containerSizes[containerKey]}) calc(${containerSizes[containerKey]} / ${percent} - 2rem)`,
   );
-
   sizesArray.push(`calc(100vw - 2rem)`);
-
   sizes = sizesArray.join(", ");
 } else {
-  sizes = `min(100vw, ${containerSizes[style.container]})`;
+  sizes = `min(100vw, ${containerSizes[containerKey]})`;
 }
 
 const imageName = media.thumbnail.split("/").pop().split(".")[0];
-
-const columnClass = () => {
-  if (style.template !== "column") return "";
-  return `column-grid column-grid-${media.image_size || 50}`;
-};
+const columnWidths = widthsColumn(style.container, media.image_size);
+const bannerWidths = widthsViewport(1920);
 
 const mediaClass = () => {
   if (!media?.aspect) return " ";
@@ -55,21 +58,56 @@ const mediaClass = () => {
   if (media.aspect == 1.25) return "aspect-5/4";
   if (media.aspect == 0.8) return "aspect-4/5";
   if (media.aspect == 0.5625) return "aspect-9/16";
-  if (media.aspect == 1) return "aspect-1";
+  if (media.aspect == 1) return "aspect-square";
   return "";
 };
 
 const hasPreviewVideo = media?.video_preview?.trim() || false;
 const hasEmbed = !!media?.video_id?.trim() || false;
+const isColumn = style.template === "column";
+const isRow = style.template === "row";
+const isBanner = style.template === "banner";
+const imageSize = String(media.image_size || "50");
+const direction = style.reverse ? "reverse" : "normal";
+
+const columnSizeClasses: Record<string, string> = {
+  "25": "md:grid-cols-[minmax(0,3fr)_minmax(0,1fr)]",
+  "33": "md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]",
+  "50": "md:grid-cols-2",
+  "66": "md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]",
+  "75": "md:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]",
+};
+const columnSizeReverseClasses: Record<string, string> = {
+  "25": "md:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]",
+  "33": "md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]",
+  "50": "md:grid-cols-2",
+  "66": "md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]",
+  "75": "md:grid-cols-[minmax(0,3fr)_minmax(0,1fr)]",
+};
+const columnSizeClass = columnSizeClasses[imageSize] || "md:grid-cols-2";
+const columnSizeReverseClass =
+  columnSizeReverseClasses[imageSize] || "md:grid-cols-2";
+
+const rootClass = [
+  `container-${style.container}`,
+  "text-image gap-8",
+  isColumn &&
+    `column-grid column-grid-${imageSize} grid gap-8 lg:gap-14 ${
+      style.reverse ? columnSizeReverseClass : columnSizeClass
+    }`,
+  isRow &&
+    `text-image-row relative flex flex-col flex-nowrap ${
+      style.reverse ? "flex-col-reverse" : ""
+    }`,
+  isBanner &&
+    `text-image-banner parallax-wrap relative overflow-hidden bg-dark ${
+      style.container !== "none" ? "rounded-md" : ""
+    }`,
+  direction,
+].filter(Boolean).join(" ");
 ---
 
-<div
-  class={`container-${
-    style.container
-  } ${columnClass()} text-image gap-8 text-image__${style.template} ${
-    style.reverse ? "reverse" : "normal"
-  } ${style.template === "banner" ? "parallax-wrap bg-dark" : ""}`}
->
+<div class={rootClass}>
   <div class="media">
     {
       imageName && (
@@ -80,22 +118,21 @@ const hasEmbed = !!media?.video_id?.trim() || false;
               video_id={media?.video_id}
               className={`${
                 !hasEmbed || "group"
-              } w-full overflow-hidden ${roundedClass} ${mediaClass()}`}
+              } relative w-full overflow-hidden ${roundedClass} ${mediaClass()}`}
             >
-              <div
-                class={`h-full w-full transition-transform duration-1000 ease-in hover:scale-105 hover:duration-[1s]`}
-              >
+              <div class="h-full w-full transition-transform duration-1000 ease-in hover:scale-105 hover:duration-[1s]">
                 {hasPreviewVideo && (
                   <VideoInline url={media.video_preview} client:visible>
-                    <Picture
+                    <SmartPicture
                       src={media.thumbnail}
                       alt={media.title}
-                      layout="fullWidth"
                       aspect={media.aspect}
                       sizes={sizes}
+                      widths={columnWidths}
+                      class="h-auto w-full object-cover"
                     />
                     {hasEmbed && (
-                      <div class="absolute inset-0 z-50 grid place-items-center">
+                      <div class="pointer-events-none absolute inset-0 z-50 grid place-items-center">
                         <Icon
                           name="play"
                           class="h-20 w-20 text-secondary transition-transform duration-300 group-hover:scale-125"
@@ -105,12 +142,13 @@ const hasEmbed = !!media?.video_id?.trim() || false;
                   </VideoInline>
                 )}
                 {!hasPreviewVideo && (
-                  <Picture
+                  <SmartPicture
                     src={media.thumbnail}
                     alt={media.title}
-                    layout="fullWidth"
                     aspect={media.aspect}
                     sizes={sizes}
+                    widths={columnWidths}
+                    class="h-auto w-full object-cover"
                   />
                 )}
               </div>
@@ -121,19 +159,20 @@ const hasEmbed = !!media?.video_id?.trim() || false;
             <div
               class={`${
                 !hasEmbed || "group"
-              } w-full overflow-hidden ${roundedClass} ${mediaClass()}`}
+              } relative w-full overflow-hidden ${roundedClass} ${mediaClass()}`}
             >
               {hasPreviewVideo && (
                 <VideoInline url={media.video_preview} client:visible>
-                  <Picture
+                  <SmartPicture
                     src={media.thumbnail}
                     alt={media.title}
-                    layout="fullWidth"
                     aspect={media.aspect}
                     sizes={sizes}
+                    widths={columnWidths}
+                    class="h-auto w-full object-cover"
                   />
                   {hasEmbed && (
-                    <div class="absolute inset-0 z-50 grid place-items-center">
+                    <div class="pointer-events-none absolute inset-0 z-50 grid place-items-center">
                       <Icon
                         name="play"
                         class="h-20 w-20 text-secondary transition-transform duration-300 group-hover:scale-125"
@@ -143,12 +182,13 @@ const hasEmbed = !!media?.video_id?.trim() || false;
                 </VideoInline>
               )}
               {!hasPreviewVideo && (
-                <Picture
+                <SmartPicture
                   src={media.thumbnail}
                   alt={media.title}
-                  layout="fullWidth"
                   aspect={media.aspect}
                   sizes={sizes}
+                  widths={columnWidths}
+                  class="h-auto w-full object-cover"
                 />
               )}
             </div>
@@ -159,65 +199,26 @@ const hasEmbed = !!media?.video_id?.trim() || false;
               class={`parallax h-full w-full opacity-${media.opacity || "60"}`}
             >
               <VideoInline url={media.video_preview} client:visible>
-                <Picture
+                <SmartPicture
                   src={media.thumbnail}
-                  width={1920}
-                  height={900}
                   aspect={2.25}
                   alt={media.title}
-                  layout="fill"
                   sizes={sizes}
-                  artDirectives={[
-                    {
-                      media: "(max-width: 500px)",
-                      aspect: 0.7,
-                      src: media.thumbnail,
-                      breakpoints: [
-                        320, 360, 390, 412, 500, 601, 768, 1024, 1200,
-                      ],
-                    },
-                    {
-                      media: "(max-width: 1000px)",
-                      aspect: 1,
-                      src: media.thumbnail,
-                      breakpoints: [
-                        500, 601, 768, 820, 962, 1280, 1440, 1536, 1920,
-                      ],
-                    },
-                  ]}
+                  widths={bannerWidths}
+                  class="h-full w-full object-cover"
                 />
               </VideoInline>
             </div>
           )}
 
           {style.template === "banner" && !hasPreviewVideo && (
-            <Picture
-              attributes={{
-                picture: { class: `parallax opacity-${media.opacity || "60"}` },
-              }}
+            <SmartPicture
               src={media.thumbnail}
-              width={1920}
-              height={900}
               aspect={2.25}
               alt={media.title}
-              layout="fill"
               sizes={sizes}
-              artDirectives={[
-                {
-                  media: "(max-width: 500px)",
-                  aspect: 0.7,
-                  src: media.thumbnail,
-                  breakpoints: [320, 360, 390, 412, 500, 601, 768, 1024, 1200],
-                },
-                {
-                  media: "(max-width: 1000px)",
-                  aspect: 1,
-                  src: media.thumbnail,
-                  breakpoints: [
-                    500, 601, 768, 820, 962, 1280, 1440, 1536, 1920,
-                  ],
-                },
-              ]}
+              widths={bannerWidths}
+              class={`parallax h-full w-full object-cover opacity-${media.opacity || "60"}`}
             />
           )}
         </>
@@ -243,7 +244,7 @@ const hasEmbed = !!media?.video_id?.trim() || false;
                 : "py-8"
             }`}
           >
-            {buttons.map((btn) => (
+            {buttons.map((btn: ButtonItem) => (
               <Button {...btn} />
             ))}
           </div>
@@ -255,7 +256,7 @@ const hasEmbed = !!media?.video_id?.trim() || false;
           <VideoDialogBtn
             client:visible
             video_id={media?.video_id}
-            className={`group grid w-full place-items-center`}
+            className="group grid w-full place-items-center"
           >
             <Icon
               name="play"
@@ -270,137 +271,11 @@ const hasEmbed = !!media?.video_id?.trim() || false;
 
 {
   hasEmbed && (
-    <VideoDialog client:idle video_id={media?.video_id} embed={media?.embed}>
-      <Icon name="close" class="w-6" />
-    </VideoDialog>
+    <VideoDialog
+      client:only="vue"
+      video_id={media?.video_id}
+      embed={media?.embed}
+    />
   )
 }
 
-<style lang="postcss">
-	.text-image {
-        @apply gap-8;
-
-		&__row {
-			@apply flex relative flex-col flex-nowrap ;
-			&.reverse {
-				@apply flex-col-reverse;
-			}
-
-			.media {
-				width: calc(100% + var(--container-spacing));
-				margin-inline: calc(var(--spacing) * -1);
-				 
-				.img {
-					@apply sticky top-8;
-				}
-			}
-		}
-		&__banner {
-			@apply relative overflow-hidden;  
-			&:not(.container-none){
-				@apply rounded-md;
-
-			} 
-			 
-			.media {
-				@apply absolute inset-0 pointer-events-none;
-			}
-            .text-image__content {
-                @apply relative z-10 w-full h-full  grid place-items-center py-20 bg-dark bg-opacity-30;
-                .richtext {
-                    @apply p-8 text-white max-w-2xl text-center;
-                }
-                
-            }
-		}
-
-	}
-
-	.column-grid {
-    @apply lg:gap-14;
-
-		.img {
-					@apply sticky top-8;
-				}
-		&-25 {
-			@apply grid   ;
-			@screen md { 
-			    grid-template-columns: minmax(0,3fr) minmax(0,1fr);
-				&.reverse {
-					grid-template-columns: minmax(0,1fr) minmax(0,3fr);
-				}
-			}
-			
-		}
-		&-33 {
-			@apply grid;
-			@screen md {
-				grid-template-columns: minmax(0,2fr) minmax(0,1fr);
-				   &.reverse {
-					   grid-template-columns: minmax(0,1fr) minmax(0,2fr);
-				   }
-			}
-		}
-
-		&-50 {
-			@apply grid md:grid-cols-2;
-			
-		}
-		&-66 {
-			@apply grid ;
-			@screen md {
-				 grid-template-columns: minmax(0,1fr) minmax(0,2fr);
-				&.reverse {
-					grid-template-columns: minmax(0,2fr) minmax(0,1fr);
-				}
-
-			}
-			
-			
-		}
-		&-75 {
-			@apply grid ;
-			@screen md {
-
-				grid-template-columns: minmax(0,1fr) minmax(0,3fr);
-				   &.reverse {
-					   grid-template-columns: minmax(0,3fr) minmax(0,1fr);
-				   }
-			}
-			
-		}
-
-
-
-		&.normal {
-
-			@screen md {
-
-				.media {
-					@apply col-start-2 row-start-1;
-					
-				}
-				.text-image__content {
-					@apply col-start-1 row-start-1 ;
-				}
-			}
-		}	
-		
-		&.container-none {
-			.text-image__content {
-				padding-inline: var(--spacing);
-					@screen md {
-						padding-inline: var(--container-spacing);
-					}
-				}
-
-				.img {
-					@apply sticky top-0;
-				}
-			
-		}
-			
-	}
-
-	
-</style>

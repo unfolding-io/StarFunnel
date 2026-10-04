@@ -35,40 +35,50 @@ export function getArchiveNav(
 	}
 }
 
+export type PaginationPath = {
+	params: { slug: string }
+	props: {
+		lastPage: number
+		currentPage: number
+		filter_type: string
+		filters: string[]
+		filter: string
+		page: any[]
+	}
+}
+
 export function getPagination(
 	posts: any[],
-	filters: string[] | any,
-	data: any,
+	filters: string[],
+	data: { per_page?: number },
 	type: string
-): Array<{ params: { slug: string }; props: any }[] | false> {
-	return filters.flatMap((filter) => {
+): PaginationPath[] {
+	const perPage = data.per_page ?? 12
+	return filters.flatMap((filter: string) => {
 		const filterSlug = slugify(filter)
 		const filterPosts = posts.filter((post) => post.data[type] && post.data[type].includes(filter))
 
-		if (filterPosts.length === 0) return false
-		const totalPages = Math.ceil(filterPosts.length / data.per_page)
+		if (filterPosts.length === 0) return []
+		const totalPages = Math.ceil(filterPosts.length / perPage)
 
 		if (totalPages > 1) {
-			let params: { params: { slug: string }; props: any }[] = []
+			const params: PaginationPath[] = []
 
 			for (let i = 1; i <= totalPages; i++) {
 				const sufix = i > 1 ? `/${i}` : ''
-				params = [
-					...params,
-					{
-						params: {
-							slug: `${filterSlug}${sufix}`
-						},
-						props: {
-							lastPage: totalPages,
-							currentPage: i,
-							filter_type: type,
-							filters: filters,
-							filter: filter,
-							page: filterPosts.slice(i * data.per_page - data.per_page, i * data.per_page)
-						}
+				params.push({
+					params: {
+						slug: `${filterSlug}${sufix}`
+					},
+					props: {
+						lastPage: totalPages,
+						currentPage: i,
+						filter_type: type,
+						filters: filters,
+						filter: filter,
+						page: filterPosts.slice(i * perPage - perPage, i * perPage)
 					}
-				]
+				})
 			}
 
 			return params
@@ -81,7 +91,7 @@ export function getPagination(
 				},
 				props: {
 					lastPage: 1,
-					currentPage: '1',
+					currentPage: 1,
 					filter_type: type,
 					filters: filters,
 					filter: filter,
@@ -90,37 +100,6 @@ export function getPagination(
 			}
 		]
 	})
-}
-
-export function getGridImageSizes(container: string): string {
-	if (container === 'full')
-		return '(min-width: 640px) calc(55rem / 2 - 0.66rem),(min-width: 768px) calc(55rem / 3 - 0.66rem), (min-width: 1024px) calc(65rem / 4 - 0.66rem), (min-width: 1536px) calc(75rem / 4 - 0.66rem), calc(100vw - 4rem)'
-
-	if (container === 'xl')
-		return '(min-width: 640px) calc(55rem / 2 - 0.66rem),(min-width: 768px) calc(55rem / 3 - 0.66rem), (min-width: 1024px) calc(65rem / 4 - 0.66rem), calc(100vw - 4rem)'
-
-	if (container === 'lg' || container === 'md')
-		return '(min-width: 640px) calc(55rem / 2 - 0.66rem),(min-width: 768px) calc(55rem / 3 - 0.66rem), calc(100vw - 4rem)'
-
-	if (container === 'sm')
-		return '(min-width: 640px) calc(55rem / 2 - 0.66rem),(min-width: 768px) calc(55rem / 3 - 0.66rem), calc(100vw - 4rem)'
-
-	return 'calc(100vw - 4rem)'
-}
-
-export function getImageUrl(thumbnail: string | null): string {
-	if (!thumbnail) return '#'
-	return `/images/${thumbnail.split('/').pop()!.split('.')[0]}`
-}
-
-export function getImageName(thumbnail: string | null): string | null {
-	if (!thumbnail) return null
-	return thumbnail.split('/').pop()!.split('.')[0]
-}
-
-export function getImageTransitionName(thumbnail: string | null): string {
-	if (!thumbnail) return `not_found_${Math.random()}`
-	return `image_${thumbnail.split('/').pop()!.split('.')[0]}`
 }
 
 export function getCategoryData(categories: any[] | undefined, category: string): any | null {

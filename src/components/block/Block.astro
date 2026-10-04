@@ -8,15 +8,17 @@ import Features from "./Features.astro";
 import AnnoyingPopup from "./AnnoyingPopup.astro";
 import PricingTable from "./PricingTable.astro";
 import Faqs from "./Faqs.astro";
+import { surfaceClass } from "@util/surfaces";
 
 const { slot, ...props } = Astro.props;
+const surface = surfaceClass(props?.style?.surface);
 ---
 
 {
   props.component !== "AnnoyingPopup" && (
     <Intersecting
       client:visible
-      className={` ${props?.style?.surface || ""} ${
+      className={` ${surface} ${
         props?.style?.block_class ? props.style.block_class : "py-8 sm:py-20"
       }`}
     >

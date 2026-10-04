@@ -38,7 +38,7 @@ const hasBlocks = blocks && blocks.length > 0;
       hasBlocks && (
         <>
           <div class={style.block_class}>
-            {blocks.map((section) => (
+            {blocks.map((section: Record<string, unknown>) => (
               <Block {...section} />
             ))}
           </div>
@@ -51,6 +51,8 @@ const hasBlocks = blocks && blocks.length > 0;
 </BaseLayout>
 
 <style is:global>
+  @reference "../styles/global.css";
+
   .page__content {
     &:empty {
       display: none;
@@ -61,9 +63,9 @@ const hasBlocks = blocks && blocks.length > 0;
     .img,
     iframe {
       width: calc(100% + var(--container-spacing));
-      margin-left: calc(var(--spacing) * -1);
+      margin-left: calc(var(--layout-spacing) * -1);
       @apply my-10 aspect-video h-auto;
-      @screen md {
+      @media (width >= 768px) {
         width: 100%;
         margin-left: 0;
       }

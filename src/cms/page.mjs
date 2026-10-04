@@ -8,12 +8,12 @@ import {
 import { t } from "@util/translate";
 export const page = {
   name: "page",
-  identifier_field: "name",
+  identifier_field: "title",
   folder: "src/content/page",
   label: "Pages",
   format: "frontmatter",
   extension: "mdx",
-  icon: "page",
+  icon: "article",
   create: true,
   editor: {
     preview: false,
@@ -77,7 +77,7 @@ export const page = {
               label: t("background"),
               widget: "select",
               options: ["gradient", "plain"],
-              default: "image",
+              default: "gradient",
             },
 
             {
@@ -89,7 +89,7 @@ export const page = {
               file: "style",
               search_fields: ["surface.*.name"],
               display_fields: ["surface.*.name"],
-              value_field: "surface.*.class",
+              value_field: "surface.*.slug",
               options_length: 50,
               required: false,
             },
@@ -192,7 +192,7 @@ export const page = {
                 "0.9",
                 "1",
               ],
-              default: "80",
+              default: "0.8",
               required: false,
             },
 
@@ -267,7 +267,7 @@ export const page = {
           label: t("nav_color"),
           hint: t("nav_color_hint"),
           widget: "select",
-          default: "base",
+          default: "normal",
           required: false,
           options: ["normal", "inverse", "dark", "light"],
         },

@@ -3,8 +3,8 @@ tag:
   - Features
   - Docs
 title: Contact Form
-description: StarFunnel contact form, get your leads trough MailGun, Postmark or Slack!
-intro: Get your leads trough MailGun, Postmark or Slack!
+description: StarFunnel contact form — get your leads through Mailgun, Postmark or Slack!
+intro: Get your leads through Mailgun, Postmark or Slack!
 style:
   template: split
   hero_template: image
@@ -15,48 +15,51 @@ thumbnail: /src/assets/helpdesk.jpeg
 ---
 ## Getting Your Contact Form Up & Running
 
-StarFunnel contact form supports multiple topics, every topic can have their own destination email or slack channel. to open the contact dialog just create a link with `href="#contact"`
+The contact form is handled by an [Astro Action](https://docs.astro.build/en/guides/actions/) (`actions.contact`) with providers in `src/lib/forms/`. Multiple topics are supported — each topic can have its own destination email or Slack channel. Open the dialog with a link to `href="#contact"`.
 
-You can configure your contact form in the CMS under **Settings > Contact, Social & Forms**
+Configure the form in the CMS under **Settings > Contact, Social & Forms** (provider: `mailgun`, `postmark`, or `slack`). Set secrets in `.env` locally and in your host’s environment UI for production. `CONTACT_FORM_ENDPOINT` overrides the CMS provider when set. For Mailgun/Postmark, `FROM_EMAIL_ADDRESS` must be an authorized sender on your domain.
 
-### MailGun
-
-For mailgun you have to add these values in your .env. the `MAILGUN_API_URL` can be `https://api.mailgun.net/v3` or `https://api.eu.mailgun.net` depending on your region.
+### Mailgun
 
 ```
+CONTACT_FORM_ENDPOINT=mailgun
+FROM_EMAIL_ADDRESS=hello@your-domain.com
+TO_EMAIL_ADDRESS=hello@your-domain.com
 MAILGUN_API_KEY=XXXXXXXXX
-MAILGUN_DOMAIN=XXXXXXXXX
+MAILGUN_DOMAIN=your-domain.com
 MAILGUN_API_URL=https://api.eu.mailgun.net
 ```
 
+`MAILGUN_API_URL` is `https://api.eu.mailgun.net` (EU) or `https://api.mailgun.net` (US) — do not include `/v3` (the action adds it).
+
 ### Postmark
 
-Add your server token to the .env.
+Add your server token to the `.env`.
 
 ```
+CONTACT_FORM_ENDPOINT=postmark
+FROM_EMAIL_ADDRESS=hello@your-domain.com
+TO_EMAIL_ADDRESS=hello@your-domain.com
 POSTMARK_SERVER_TOKEN=XXXXXXXXX
 ```
 
 ### Slack
 
-For slack to work you first need to create an app, then add the slack token + channel id to your .env
+Create a Slack app, then add the token + channel id to your `.env`:
 
 ```
+CONTACT_FORM_ENDPOINT=slack
 SLACK_CHANNEL_ID=XXXXXXXXX
 SLACK_TOKEN=XXXXXXXXX
 ```
 
-**Create your slack app:**
+**Create your Slack app:**
 
-1. Go to [https://api.slack.com/apps](https://api.slack.com/apps)
-1. Click “Create an App” Button.
-1. Select “from scratch”
-1. Set name and workspace
-1. Go to OAuth & Permissions menu.
-1. Add Scopes ( chat:write, chat:write:customize, chat:write:public)
-1. In the left settings menu select "install app" and connect it to your workspace
-1. Now you have your **Bot User OAuth Token** this is your `SLACK_TOKEN`
-
-
-
-
+1. Go to [https://api.slack.com/apps](https://api.slack.com/apps)
+2. Click “Create an App”
+3. Select “from scratch”
+4. Set name and workspace
+5. Go to OAuth & Permissions
+6. Add Scopes (`chat:write`, `chat:write:customize`, `chat:write:public`)
+7. In the left settings menu select “Install app” and connect it to your workspace
+8. Copy the **Bot User OAuth Token** — this is your `SLACK_TOKEN`

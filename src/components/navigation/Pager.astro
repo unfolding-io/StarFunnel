@@ -1,26 +1,24 @@
 ---
-import { Icon } from "astro-icon/components";
 import { t } from "@util/translate";
-export interface Props {
-  currentPage: Number;
-  totalPage: Number;
+interface Props {
+  currentPage: number;
+  totalPage: number;
   url: string;
 }
 
 const { currentPage, totalPage, url } = Astro.props as Props;
 
-let pageStatuses = Array.from({ length: totalPage }, (v, i) => i + 1).map(
+let pageStatuses = Array.from({ length: totalPage }, (_v, i) => i + 1).map(
   (i) => {
-    var item = {
+    return {
       pageNumber: i,
       isActive: currentPage == i,
       isDisabled: isDisabled(i),
     };
-    return item;
   },
 );
 
-function isDisabled(i) {
+function isDisabled(i: number) {
   if (Number(totalPage) <= 6) return false;
   if (i <= 2 || i >= Number(totalPage) - 1) return false;
   if (currentPage == i - 1 || currentPage == i || currentPage == i + 1)

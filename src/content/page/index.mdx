@@ -85,7 +85,7 @@ blocks:
       - href: "#"
         icon: /src/icons/git.svg
         content: >
-          With Astro + Static CMS, your content finds its home in a Git
+          With Astro + Sveltia CMS, your content finds its home in a Git
           repository, ensuring efficient content management and collaboration.
         color: surface-secondary
         title: Git-Based
@@ -213,22 +213,22 @@ blocks:
       - id: 6687141f-b8ce-4d67-ba1f-cf838551eb02
         title: Where can I host StarFunnel?
         description: >
-          StarFunnel can be easily hosted on [Netlify](https://www.netlify.com/)
-          out of the box. If you prefer a different platform, you'll need to
-          deploy and link edge functions to ensure that the forms continue to
-          function seamlessly.
+          StarFunnel ships with the Netlify adapter and works great on
+          [Netlify](https://www.netlify.com/). You can also swap in the
+          Cloudflare or Vercel adapter — forms run as Astro Actions, so any
+          supported host works once the adapter is configured.
       - id: 03c89715-772a-4d6d-8e07-589f8be149d9
         title: What newsletter platforms are supported?
         description: >
-          Currently, StarFunnel integrates with [MailChimp
-          ](https://mailchimp.com/) for newsletter services.
+          Currently, StarFunnel integrates with [Mailchimp](https://mailchimp.com/)
+          for newsletter services via the `actions.subscribe` Astro Action.
       - id: 13236024-260c-4df9-8026-8979f92acffa
         title: How is the contact form handled?
         description: >
-          The contact form submissions can be received through
-          [Postmark](https://postmarkapp.com/) or
-          [MailGun](https://www.mailgun.com/) Alternatively, you can set it up
-          to post directly to a [Slack](https://slack.com/) channel.
+          Contact submissions go through the `actions.contact` Astro Action and
+          can be delivered via [Postmark](https://postmarkapp.com/),
+          [Mailgun](https://www.mailgun.com/), or a [Slack](https://slack.com/)
+          channel.
       - id: b9b4dbd5-e4e3-4653-be11-59686c752f03
         title: How does the contact form topic feature work?
         description: >
@@ -236,38 +236,26 @@ blocks:
           connect a unique email or Slack channel to each specific topic.
       - id: 4060ab29-325f-40b4-8013-3981bb6054b4
         title: Is StarFunnel's landing page builder free?
-        description: >+
-          Yes, StarFunnel's landing page builder is released under the [CC BY
-          4.0 License](/license)
-
+        description: >
+          Yes, StarFunnel is released under the [CC BY-ND 4.0 License](/license).
       - id: adc5ac8b-4406-475a-9e08-c1781d4cbc74
         title: Can I remove the attribution?
         description: >
-          If you wish to remove the attribution, you have the option to purchase
-          a [license](https://nebulix.unfolding.io/shop/starfunnel-license/) for
-          $149.95 USD.
+          Yes — support further development with a
+          [Buy me a coffee](https://buymeacoffee.com/unfolding.io) license. See
+          [pricing](/pricing) for details.
       - id: d89f61b4-0e72-40f0-9a08-d424752f4474
         title: Does StarFunnel come with a CMS?
         description: >
-          Yes, StarFunnel is built on [Static CMS](https://www.staticcms.org/)
-          an open-source CMS based on Git that supports multiple users.
+          Yes, StarFunnel includes [Sveltia CMS](https://sveltiacms.app/) — a
+          Git-based CMS. Open `/admin` to edit content locally or via GitHub.
       - id: 2a8db3a9-2daf-4f75-a493-c3964454f7b0
         title: Does StarFunnel come with user login functionality?
         description: >
-          While StarFunnel provides forms and a starter edge function to help
-          you begin, it doesn't include the authentication logic or platform.
-          You'll need to implement your authentication system or integrate with
-          a third-party authentication service to enable user accounts and
-          redirects.
-  - type: recentitems
-    component: RecentItems
-    count: 10
-    post_tag:
-      - Made with StarFunnel
-    title: Made with StarFunnel
-    content: "\n\n\n"
-    style:
-      surface: surface-base
+          StarFunnel provides forms and an auth UI starter, but it doesn't
+          include a full authentication backend. You'll need to implement your
+          own auth system or integrate a third-party service for user accounts
+          and redirects.
   - type: popup
     component: AnnoyingPopup
     timing:
@@ -275,9 +263,9 @@ blocks:
       duration: 7
       on_load: false
     content: |
-      ## Need help with kickstarting your project!
+      ## Need help with your project?
 
-      Get in touch with us and we will help you get started, now with 20% off.
+      Get in touch and we’ll help with setup, custom integrations, or design.
     code: GET-HELP-NOW
     style:
       surface: surface-dark
@@ -287,7 +275,7 @@ blocks:
     buttons:
       - icon_only: false
         label: More info
-        href: /kickstart-your-project
+        href: /pricing
     link: annoying-popup
   - type: text_media
     component: TextMedia

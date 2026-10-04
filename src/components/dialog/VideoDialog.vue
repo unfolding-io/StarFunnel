@@ -2,13 +2,13 @@
   <Transition name="fade">
     <div
       v-show="$show.show && $show.id === video_id"
-      class="bg-dark-blur z-1000 pointer-events-auto fixed inset-0 grid w-full cursor-pointer place-items-center"
+      class="video-dialog"
       @click="pauseVideo()"
     >
-      <div @click.stop class="container-md relative">
-        <div class="overflow-hidden rounded shadow-xl">
+      <div @click.stop class="video-dialog__panel">
+        <div class="video-dialog__frame">
           <div
-            class="w-full"
+            class="video-dialog__player"
             ref="container"
             :data-plyr-provider="embed"
             :data-plyr-embed-id="video_id"
@@ -16,10 +16,27 @@
         </div>
 
         <button
-          class="btn btn-icon surface-dark btn-absolute -right-1 -top-1 z-10 grid h-10 w-10 place-items-center"
+          type="button"
+          class="video-dialog__close"
+          aria-label="Close"
           @click="pauseVideo()"
         >
-          <slot />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M18 6 6 18M6 6l12 12"
+            />
+          </svg>
         </button>
       </div>
     </div>
@@ -27,14 +44,10 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
-
-import "plyr/dist/plyr.css";
-
+import { ref, watch, onBeforeUnmount, nextTick } from "vue";
 import { useStore } from "@nanostores/vue";
 import { showVideo } from "@src/store";
-
-import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
+import "plyr/dist/plyr.css";
 
 const $show = useStore(showVideo);
 
@@ -45,32 +58,32 @@ const props = defineProps({
   embed: {
     type: String,
   },
-  className: {
-    type: String,
-  },
 });
 
 const container = ref(null);
 const videoPlayer = ref(null);
-const loading = ref(false);
-let Plyr;
+let PlyrCtor;
 
-onMounted(async () => {});
 const pauseVideo = () => {
   showVideo.set({
     id: $show.value.id,
     show: false,
   });
   if (videoPlayer.value) videoPlayer.value.pause();
+  document.body.style.overflow = "";
 };
 
 const playVideo = async () => {
-  /* allowCookie.value = checkCookie(); */
-  if (!Plyr) Plyr = (await import("plyr")).default;
+  await nextTick();
+  if (!container.value) return;
+  if (!PlyrCtor) {
+    // Separate client chunk — avoids SSR `document` access and stale Vite dep hashes
+    PlyrCtor = (await import("@src/lib/loadPlyr")).default;
+  }
   if (!videoPlayer.value) {
-    loading.value = true;
-    videoPlayer.value = new Plyr(container.value, {
+    videoPlayer.value = new PlyrCtor(container.value, {
       playsinline: 0,
+      autoplay: true,
       settings: ["loop"],
       iconUrl: "/icons/plyr.svg",
       controls: [
@@ -83,19 +96,17 @@ const playVideo = async () => {
         "fullscreen",
       ],
       youtube: {
-        origin: window.location.host,
+        origin: window.location.origin,
         iv_load_policy: 3,
         modestbranding: 1,
-        showinfo: 0,
         rel: 0,
         enablejsapi: 1,
         noCookie: true,
       },
     });
 
-    videoPlayer.value.on("ready", function (event) {
-      videoPlayer.value.play();
-      loading.value = false;
+    videoPlayer.value.on("ready", () => {
+      videoPlayer.value?.play();
     });
   } else {
     videoPlayer.value.play();
@@ -104,22 +115,94 @@ const playVideo = async () => {
 
 watch(
   $show,
-
-  (val) => {
+  async (val) => {
     if (val.show && val.id === props.video_id) {
-      playVideo();
-      disableBodyScroll(document.body);
+      document.body.style.overflow = "hidden";
+      await playVideo();
     }
     if (!val.show && val.id === props.video_id) {
-      enableBodyScroll(document.body);
+      document.body.style.overflow = "";
     }
   },
   { immediate: true },
 );
+
+onBeforeUnmount(() => {
+  document.body.style.overflow = "";
+  videoPlayer.value?.destroy?.();
+  videoPlayer.value = null;
+});
 </script>
 
 <style>
-.z-1000 {
-  z-index: 100;
+.video-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  width: 100%;
+  place-items: center;
+  cursor: pointer;
+  pointer-events: auto;
+  background-color: color-mix(
+    in srgb,
+    var(--palette-dark, #191c26) 40%,
+    transparent
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1.5rem;
+}
+
+.video-dialog__panel {
+  position: relative;
+  width: min(100% - 2rem, 55rem);
+  cursor: default;
+}
+
+.video-dialog__frame {
+  overflow: hidden;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.45);
+  background: #000;
+  aspect-ratio: 16 / 9;
+}
+
+.video-dialog__player,
+.video-dialog__player .plyr,
+.video-dialog__player .plyr__video-wrapper,
+.video-dialog__player iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.video-dialog__player {
+  width: 100%;
+  height: 100%;
+}
+
+.video-dialog__close {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  border: 0;
+  cursor: pointer;
+  color: #fff;
+  background: var(--palette-dark, #191c26);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

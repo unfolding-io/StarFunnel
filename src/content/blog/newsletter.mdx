@@ -10,20 +10,17 @@ style:
 pubDate: 2023-11-14T18:18:19.415Z
 thumbnail: /src/assets/news.jpeg
 ---
-## Mailchimp powed newsletters
+## Mailchimp-powered newsletters
 
-Create multiple newsletter forms with list & tag support.
+Newsletter signup is handled by an [Astro Action](https://docs.astro.build/en/guides/actions/) (`actions.subscribe`) with the Mailchimp provider in `src/lib/forms/`. You can create multiple newsletter forms with list & tag support.
 
-You can configure your newsletters in the CMS under **Settings > Contact, Social & Forms.** Configure your global newsletter settings and create lists you can open by an anchor link.
+Configure newsletters in the CMS under **Settings > Contact, Social & Forms**. Set global newsletter settings and create lists you can open with an anchor link.
 
-Set your mailchimp credentials in your .env and in your netlify/vercel deploy settings
+Set your Mailchimp credentials in `.env` locally and in your host’s environment UI for production:
 
 ```
+NEWSLETTER_PROVIDER=mailchimp
 MAILCHIMP_API_KEY=XXX
-MAILCHIMP_SERVER_PREFIX=us21	
+MAILCHIMP_SERVER_PREFIX=us21
 MAILCHIMP_LIST_ID=XXX
 ```
-
-
-
-

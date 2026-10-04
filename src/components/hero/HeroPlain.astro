@@ -1,6 +1,7 @@
 ---
 import ItemFilter from "@components/navigation/ItemFilter.astro";
 import FormattedDate from "@components/FormattedDate.astro";
+import { surfaceClass } from "@util/surfaces";
 
 const {
   title,
@@ -13,10 +14,11 @@ const {
   filter,
   filter_type,
 } = Astro.props;
+const heroSurface = surfaceClass(style?.hero_surface);
 
 ---
 
-<div class={`z-0 overflow-hidden ${style.hero_surface || ""}`} id="header">
+<div class={`z-0 overflow-hidden ${heroSurface}`} id="header">
   <div class="z-10 grid place-items-start">
     <div class="container-md pb-20 pt-40">
       <div class="max-w-3xl">

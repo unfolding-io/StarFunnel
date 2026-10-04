@@ -1,5 +1,5 @@
 import { t } from "@util/translate";
-import { buttons, style } from "./common.mjs";
+import { style } from "./common.mjs";
 
 export const settings = {
   name: "config",
@@ -383,10 +383,48 @@ export const settings = {
           label_singular: t("surface"),
           widget: "list",
           collapsed: true,
-          summary: "{{name}} | {{class}}",
+          summary: "{{fields.name}} ({{fields.slug}})",
           fields: [
-            { name: "name", label: t("name"), widget: "string" },
-            { name: "class", label: t("class"), widget: "string" },
+            { name: "name", label: t("name"), widget: "string", required: true },
+            {
+              name: "slug",
+              label: "Slug",
+              widget: "string",
+              hint: "Used as CSS class surface-{slug}. Letters, numbers, dashes.",
+              pattern: [
+                "^[a-z0-9-]+$",
+                "lowercase letters, numbers, dashes only",
+              ],
+              required: true,
+            },
+            {
+              name: "light_bg",
+              label: "Light background",
+              widget: "color",
+              enableInput: true,
+              required: true,
+            },
+            {
+              name: "light_fg",
+              label: "Light foreground",
+              widget: "color",
+              enableInput: true,
+              required: true,
+            },
+            {
+              name: "dark_bg",
+              label: "Dark background",
+              widget: "color",
+              enableInput: true,
+              required: true,
+            },
+            {
+              name: "dark_fg",
+              label: "Dark foreground",
+              widget: "color",
+              enableInput: true,
+              required: true,
+            },
           ],
           required: false,
         },

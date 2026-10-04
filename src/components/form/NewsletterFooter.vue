@@ -1,22 +1,21 @@
 <template>
   <form
     name="newsletter-subscribes"
-    class="relative inline-flex items-center gap-4 py-4"
+    class="newsletter-footer relative inline-flex items-center gap-4 py-4"
     @submit.prevent="submit"
   >
-    <div class="input-group min-w-[200px]">
+    <div class="input-group min-w-[12rem] flex-1 sm:min-w-[14rem]">
       <input
         type="email"
         id="email"
         name="email"
         placeholder=" "
-        class="pee"
         v-model="form.email"
-        :class="errorFields?.email?.length ? 'text-warning' : 'text-white'"
+        :aria-invalid="!!errorFields?.email?.length"
       />
       <label
         for="email"
-        class="peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
+        :class="{ 'is-invalid': !!errorFields?.email?.length }"
         >{{ t("email") }} *</label
       >
     </div>
@@ -24,7 +23,7 @@
     <button
       type="submit"
       :disabled="!canSubmit"
-      class="btn group"
+      class="btn group shrink-0"
       :class="canSubmit ? 'surface-primary' : 'surface-base opacity-50'"
     >
       {{ t("subscribe") }}
@@ -62,26 +61,35 @@
   </form>
 </template>
 
-<script setup>
-import { ref, computed, reactive } from "vue";
+<script setup lang="ts">
+import { ref, computed, reactive, onMounted } from "vue";
 import { t } from "@util/translate";
 import { useAsyncValidator } from "@vueuse/integrations/useAsyncValidator";
 import Loading from "@components/common/Loading.vue";
-import "vue3-toastify/dist/index.css";
 import { toast } from "vue3-toastify";
-const props = defineProps({
-  type: {
-    type: String,
-    required: false,
-    default: "mailchimp",
-  },
-  list_id: String,
-  data: {
-    type: Object,
-  },
+import { actions } from "astro:actions";
+
+onMounted(async () => {
+  if (document.getElementById("toastify-css")) return;
+  const cssUrl = (await import("vue3-toastify/dist/index.css?url")).default;
+  const link = document.createElement("link");
+  link.id = "toastify-css";
+  link.rel = "stylesheet";
+  link.href = cssUrl;
+  document.head.appendChild(link);
 });
+
+const props = withDefaults(
+  defineProps<{
+    type?: string;
+    list_id?: string;
+    data?: Record<string, any>;
+  }>(),
+  {
+    type: "mailchimp",
+  },
+);
 const loading = ref(false);
-const message = ref(null);
 const form = reactive({ email: "" });
 const rules = {
   email: [
@@ -96,33 +104,81 @@ const canSubmit = computed(() => {
   return !loading.value && isFinished.value && pass.value;
 });
 
-const submit = () => {
-  if (props.type === "mailchimp") {
-    loading.value = true;
-    fetch("/api/newsletter/mailchimp", {
-      method: "POST",
-      body: JSON.stringify({ email: form.email }),
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.status === "pending" || data.status === "subscribed") {
-          toast.success(t("newsletter_thanks"));
-          form.email = "";
-        } else if (data.status === "Member Exists") {
-          toast.info(t("newsletter_already_subscribed"));
-          form.email = "";
-        } else {
-          toast.error(t("newsletter_error"));
-        }
-      })
-      .catch((e) => {
-        message.value = t("newsletter_error");
-        toast.error(t("newsletter_error"));
-      })
-      .finally(() => {
-        loading.value = false;
-      });
+const submit = async () => {
+  if (props.type !== "mailchimp" || !canSubmit.value) return;
+
+  loading.value = true;
+  try {
+    const { data, error } = await actions.subscribe({
+      email: form.email,
+      provider: "mailchimp",
+    });
+
+    if (error) {
+      toast.error(error.message || t("newsletter_error"));
+      return;
+    }
+
+    if (data?.status === "exists") {
+      toast.info(t("newsletter_already_subscribed"));
+    } else {
+      toast.success(t("newsletter_thanks"));
+    }
+    form.email = "";
+  } catch (e) {
+    toast.error(t("newsletter_error"));
+  } finally {
+    loading.value = false;
   }
 };
 </script>
+
+<style>
+/* Keep with the island — Vite sometimes serves a stale layouts/global sheet in HMR */
+.newsletter-footer .input-group {
+  position: relative;
+  isolation: isolate;
+  min-width: 12rem;
+}
+.newsletter-footer .input-group input {
+  display: block;
+  width: 100%;
+  appearance: none;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, #fff 70%, transparent);
+  background: transparent;
+  padding: 0.625rem 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #fff;
+}
+.newsletter-footer .input-group input:focus {
+  border-bottom-color: var(--color-primary, #f34c18);
+  outline: none;
+}
+.newsletter-footer .input-group label {
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  top: 0.625rem;
+  z-index: 10;
+  transform: translateY(-1.5rem) scale(0.75);
+  transform-origin: 0 0;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, #fff 80%, transparent);
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
+}
+.newsletter-footer .input-group input:placeholder-shown ~ label {
+  transform: translateY(0) scale(1);
+}
+.newsletter-footer .input-group input:focus ~ label,
+.newsletter-footer .input-group input:not(:placeholder-shown) ~ label {
+  transform: translateY(-1.5rem) scale(0.75);
+  color: var(--color-primary, #f34c18);
+}
+.newsletter-footer .input-group label.is-invalid {
+  color: var(--color-warning, #ca792d);
+}
+</style>

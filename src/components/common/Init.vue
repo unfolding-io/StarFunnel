@@ -5,13 +5,10 @@
 <script setup>
 import { watch, ref, onMounted } from "vue";
 import { useWindowSize } from "@vueuse/core";
-import { useDebounceFn } from "@vueuse/core";
-import { showPopup, showDialog } from "@src/store";
 const { width } = useWindowSize();
 const shown = ref(false);
 
 onMounted(() => {
-  const root = document.documentElement;
   const html = document.getElementsByTagName("html")[0];
   const start = new Date().getTime();
 
@@ -34,34 +31,6 @@ onMounted(() => {
     html.style["scroll-behavior"] = "smooth";
   }, 500);
 
-  /* SCROLL OBSERVER FOR PAGE */
-  let prevPos = 0;
-  let isScrollingUp = false;
-
-  function flip(attr, state) {
-    root.setAttribute(attr, String(state));
-  }
-
-  const scrollHandler = useDebounceFn(() => {
-    const pos = window.scrollY;
-    const delta = pos - prevPos;
-    const scrollDirection = Math.sign(delta) === -1;
-    const isBottom =
-      pos + window.innerHeight > document.body.offsetHeight - 100;
-    const isTop = pos < 100;
-
-    if (delta < -15 || delta > 15) {
-      isScrollingUp = scrollDirection;
-    }
-
-    flip("data-is-scrolling-up", isScrollingUp);
-    flip("data-is-bottom", isBottom);
-    flip("data-is-top", isTop);
-
-    prevPos = pos;
-  }, 20);
-
-  window.addEventListener("scroll", () => scrollHandler(), { passive: true });
   /* PARALLAX ANIMATIONS */
   const parallaxReveal = document.querySelectorAll(".parallax-wrap");
   if (!document.documentElement.dataset.ios) {
@@ -84,92 +53,7 @@ onMounted(() => {
     });
   }
 
-  /* LOGIN FORM */
-  const loginButtons = document.querySelectorAll("[href='#sign-in']");
-  loginButtons.forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      showDialog.set({
-        show: true,
-        type: "auth",
-        link: "auth",
-        auth: "sign_in",
-      });
-    });
-  });
-
-  /* SIGN UP FORM */
-  const registrationButtons = document.querySelectorAll("[href='#sign-up']");
-  registrationButtons.forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      showDialog.set({
-        show: true,
-        type: "auth",
-        link: "auth",
-        auth: "sign_up",
-      });
-    });
-  });
-
-  /* NEWSLETTERS */
-  /* const newsletterForms = document.querySelectorAll("[data-newsletter]");
-
-  newsletterForms.forEach((el) => {
-    const link = el.dataset.newsletter;
-    const newsletterButtons = document.querySelectorAll(`[href='#${link}']`);
-
-    newsletterButtons.forEach((el) => {
-      el.addEventListener("click", (e) => {
-        e.preventDefault();
-        showDialog.set({
-          show: true,
-          slug: link,
-          type: "newsletter",
-        });
-      });
-    });
-  }); */
-
-  /* DIALOGS */
-
-  const dialogs = document.querySelectorAll("[data-dialog]");
-
-  dialogs.forEach((el) => {
-    const link = el.dataset.dialog;
-    const type = el.dataset.type;
-    const buttons = document.querySelectorAll(`[href='#${link}']`);
-
-    buttons.forEach((el) => {
-      el.addEventListener("click", (e) => {
-        e.preventDefault();
-
-        showDialog.set({
-          show: true,
-          link: link,
-          type: type,
-        });
-      });
-    });
-  });
-
-  /* POPUPS */
-
-  const popups = document.querySelectorAll("[data-popup]");
-  popups.forEach((el) => {
-    const link = el.dataset.popup;
-    const popupButtons = document.querySelectorAll(`[href='#${link}']`);
-
-    popupButtons.forEach((el) => {
-      el.addEventListener("click", (e) => {
-        e.preventDefault();
-        showPopup.set({
-          show: true,
-          type: link,
-        });
-      });
-    });
-  });
+  // Dialog / popup / auth hash links are bound in bindModalLinks (BaseLayout).
 });
 
 /* CREDITS, PLEASE LEAVE THIS IN PLACE */

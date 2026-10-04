@@ -1,11 +1,12 @@
 ---
 import { getEntry } from "astro:content";
-import { ViewTransitions } from "astro:transitions";
-import { getImage } from "astro:assets";
-
+import { ClientRouter } from "astro:transitions";
+import { Font, getImage } from "astro:assets";
+import { resolveAsset } from "@util/assets";
 import "../styles/global.css";
+import "../styles/layouts.css";
 
-const { data } = await getEntry("config", "about");
+const about = await getEntry("config", "about");
 
 interface Props {
   title: string;
@@ -16,27 +17,29 @@ interface Props {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const { title, description, thumbnail } = Astro.props;
 
-let socialImage ;
-const pageTitle = `${title} | ${data.sitename}`;
+const thumbAsset = thumbnail ? resolveAsset(thumbnail) : undefined;
+const searchImage = thumbAsset
+  ? (
+      await getImage({
+        src: thumbAsset,
+        width: 120,
+        height: 120,
+        format: "webp",
+      })
+    ).src
+  : null;
+const socialImage = thumbAsset
+  ? (
+      await getImage({
+        src: thumbAsset,
+        width: 1200,
+        height: 630,
+        format: "png",
+      })
+    ).src
+  : null;
 
-/* SOCIAL IMAGE */
-if(thumbnail) {
-
-  const allImages = import.meta.glob("/src/assets/*.{jpeg,jpg,png,gif}");
-
-  const imgObj = (await allImages[thumbnail]()).default;
-  
- 
-  socialImage = await getImage({
-    src: imgObj,
-    width: 1200,
-    height: 630,
-    format: "png",
-  });
-
-}
-
-
+const pageTitle = `${title} | ${about?.data?.sitename ?? "StarFunnel"}`;
 ---
 
 <!-- Global Metadata -->
@@ -44,6 +47,10 @@ if(thumbnail) {
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta name="generator" content={Astro.generator} />
+<Font
+  cssVariable="--font-dm-sans"
+  preload={[{ style: "normal", subset: "latin" }]}
+/>
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
@@ -52,13 +59,22 @@ if(thumbnail) {
 <title>{pageTitle}</title>
 <meta name="title" content={pageTitle} />
 <meta name="description" content={description} />
+{
+  searchImage && (
+    <meta
+      data-pagefind-meta="image[content]"
+      content={searchImage}
+      property="search:image"
+    />
+  )
+}
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-{socialImage && <meta property="og:image" content={socialImage.src} />}
+{socialImage && <meta property="og:image" content={socialImage} />}
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
@@ -66,6 +82,7 @@ if(thumbnail) {
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 {socialImage && <meta property="twitter:image" content={socialImage} />}
+
 <script is:inline>
   const setDarkMode = () => {
     if (localStorage.getItem("color-scheme") === "dark") {
@@ -79,10 +96,11 @@ if(thumbnail) {
         ? "dark"
         : "light";
       localStorage.setItem("color-scheme", theme);
+      document.querySelector("html").dataset.theme = theme;
     }
   };
   setDarkMode();
   document.addEventListener("astro:after-swap", setDarkMode);
 </script>
-<ViewTransitions fallback="swap" />
-<script src="/scroll-timeline.js" is:inline async></script>
+
+<ClientRouter fallback="swap" />

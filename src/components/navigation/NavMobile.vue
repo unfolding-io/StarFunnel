@@ -101,6 +101,8 @@ onMounted(() => {
 </script>
 
 <style lang="postcss">
+@reference "../../styles/global.css";
+
 .menu-icon {
   path {
     @apply origin-center transition-all duration-300 ease-in-out;
