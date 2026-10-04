@@ -2,8 +2,10 @@
 
 [![License: CC BY-ND 4.0](https://img.shields.io/badge/License-CC_BY--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nd/4.0/)
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Astro](https://img.shields.io/badge/Astro-7-BC52EE)
+![Node](https://img.shields.io/badge/node-%3E%3D22.12-339933)
 
-Fast sales-funnel theme built on **Astro 7**, **Tailwind CSS v4**, **content collections**, and **Sveltia CMS**.
+Fast sales-funnel theme built on **Astro 7**, **Tailwind CSS v4**, **Vue 3**, typed **content collections**, and **Sveltia CMS**.
 
 ## Features
 
@@ -13,12 +15,26 @@ Fast sales-funnel theme built on **Astro 7**, **Tailwind CSS v4**, **content col
 - PhotoSwipe lightbox for image enlargement (no `/images` routes)
 - Sveltia CMS admin at `/admin`
 - Contact + newsletter via [Astro Actions](https://docs.astro.build/en/guides/actions/) (Mailgun, Postmark, Slack, Mailchimp)
+- Deferred Vue islands (`client:interaction`, `client:media-idle`)
 
-See [`CHANGELOG.md`](CHANGELOG.md) for release notes.
+See [`CHANGELOG.md`](CHANGELOG.md) for the full **1.0.0** release notes and migration guide.
+
+## Stack
+
+| Layer | Package / note |
+| --- | --- |
+| Framework | `astro` 7 |
+| UI islands | `vue` 3 + `@vueuse/*` 15 |
+| Styles | `tailwindcss` 4 + `@tailwindcss/vite` |
+| CMS | Sveltia (`public/admin/sveltia-cms.js`) |
+| Forms | Astro Actions + `src/lib/forms/` |
+| Markdown | `@astrojs/mdx`, `marked` 18, Unified remark/rehype plugins |
+| Types | TypeScript 6 (`astro check`) |
+| Default host | `@astrojs/netlify` |
 
 ## Requirements
 
-- Node.js **22.12+** (22.19+ recommended)
+- Node.js **22.12+** (see `.nvmrc`)
 - npm 10+
 
 ## Getting started
@@ -37,14 +53,18 @@ npm run dev:demo
 
 ## Environment
 
-See [`env.txt`](env.txt). Key vars:
+Template: [`env.txt`](env.txt). Copy to `.env` locally and mirror the same keys on your host.
 
 | Variable | Purpose |
 | --- | --- |
 | `BLOG_SLUG` | Blog URL segment (default `news`) |
 | `WEBSITE_LANGUAGE` | Locale for UI strings |
 | `CURRENCY` / `UNITS` | Display preferences |
-| Newsletter / mail / Slack | Used by Astro Actions (see below) |
+| `NEWSLETTER_PROVIDER` | Newsletter provider (`mailchimp`) |
+| `MAILCHIMP_*` | Mailchimp API key, server prefix, list id |
+| `CONTACT_FORM_ENDPOINT` | Contact provider override: `mailgun` \| `postmark` \| `slack` |
+| `FROM_EMAIL_ADDRESS` / `TO_EMAIL_ADDRESS` | Mail sender / default recipient |
+| `MAILGUN_*` / `POSTMARK_*` / `SLACK_*` | Provider credentials |
 
 ## CMS (Sveltia)
 
@@ -58,7 +78,7 @@ Contact and newsletter run as Astro Actions under [`src/actions/`](src/actions/)
 
 | Action | Used by | Providers |
 | --- | --- | --- |
-| `actions.contact` | Contact dialog | `mailgun`, `postmark`, `slack` |
+| `actions.contact` | Contact dialog (`#contact`) | `mailgun`, `postmark`, `slack` |
 | `actions.subscribe` | Footer / dialog newsletter | `mailchimp` |
 
 Pages stay statically prerendered; the adapter only serves the action endpoints. Set the matching secrets in `.env` (local) and in your host’s environment UI (production).
@@ -68,6 +88,7 @@ Pages stay statically prerendered; the adapter only serves the action endpoints.
 | Script | Description |
 | --- | --- |
 | `npm run dev` | Dev server |
+| `npm run dev:demo` | Dev server with demo env vars |
 | `npm run check` | Type-check with `astro check` |
 | `npm run build` | Production build |
 | `npm run preview` | Preview `dist/` |
@@ -118,6 +139,17 @@ Already configured (`adapter: netlify()` in [`astro.config.mjs`](astro.config.mj
 ### Switching hosts later
 
 Only one adapter should be active. After `npx astro add <platform>`, remove the unused adapter package if it remains in `package.json`, and keep host-specific config aligned with the platform you actually use.
+
+## Upgrading from 0.1.x
+
+This is a **breaking** major release. Highlights:
+
+- Node 22.12+ required (was 18/20)
+- `/api/*` form routes → Astro Actions
+- Static CMS → Sveltia CMS
+- Custom image service / `/images` routes → `astro:assets` + PhotoSwipe
+
+Full details: [`CHANGELOG.md`](CHANGELOG.md).
 
 ## License
 
